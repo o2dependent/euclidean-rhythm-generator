@@ -18,18 +18,67 @@
 
 	onMount(() => {
 		synth = new Tone.PolySynth({
-			maxPolyphony: 8,
 			voice: Tone.Synth,
 			volume: -12,
 			options: { oscillator: { type: "sine" } },
 		}).toDestination();
+
+		const whiteKeyKeyboard = [
+			`a`,
+			`s`,
+			`d`,
+			`f`,
+			`g`,
+			`h`,
+			`j`,
+			`k`,
+			`l`,
+			`;`,
+			`'`,
+		];
+		const blackKeyKeyboard = ["w", "e", "t", "y", "u", "o", "p", "[", "]"];
+
+		const getKeyFromInput = (inputKey: string) => {
+			let keyboard = whiteKeyKeyboard;
+			let keys = whiteKeys;
+			if (blackKeyKeyboard.includes(inputKey)) {
+				keyboard = blackKeyKeyboard;
+				keys = blackKeys;
+			}
+			const valid = keyboard.includes(inputKey);
+			let octave = octaveOffset;
+			if (valid) {
+				if (keyboard.indexOf(inputKey) >= keys.length) {
+					octave = octave + 1;
+				}
+			}
+			const key: Key = `${
+				keys[keyboard.indexOf(inputKey) % keys.length]
+			}${octave}`;
+			return { key, valid };
+		};
+
+		window.addEventListener("keydown", (e) => {
+			const inputKey = e.key.toLowerCase();
+			const { key, valid } = getKeyFromInput(inputKey);
+
+			if (valid) keyDown(key);
+		});
+		window.addEventListener("keyup", (e) => {
+			const inputKey = e.key.toLowerCase();
+			const { key, valid } = getKeyFromInput(inputKey);
+
+			if (valid) keyUp(key);
+		});
 	});
 
 	const keyDown = (key: Key) => {
+		if (keysDown[key]) return;
 		synth.triggerAttack(key);
 		keysDown[key] = true;
 	};
 	const keyUp = (key: Key) => {
+		if (!keysDown[key]) return;
 		synth.triggerRelease(key);
 		keysDown[key] = false;
 	};
@@ -62,12 +111,9 @@
 							leftMouseDown = false;
 						}}
 						on:mouseleave={() => keyUp(`${key}${i + octaveOffset}`)}
-						style="grid-area: {key}; background-color: {keysDown[
-							`${key}${i + octaveOffset}`
-						]
-							? '#ffffff'
-							: '#f5f2e4'};"
+						style="grid-area: {key};"
 						class="white-key"
+						class:pressed={keysDown[`${key}${i + octaveOffset}`]}
 					></button>
 				{/each}
 			</div>
@@ -87,6 +133,7 @@
 						on:mouseleave={() => keyUp(`${key}${i + octaveOffset}`)}
 						style="grid-area: {key.replace('#', 's')};"
 						class="black-key"
+						class:pressed={keysDown[`${key}${i + octaveOffset}`]}
 					></button>
 				{/each}
 			</div>
@@ -118,9 +165,15 @@
 		border-radius: 0vw 0vw 0.5vw 0.5vw;
 		border: 1px solid #00000040;
 	}
+	.white-key.pressed {
+		background-color: hsl(49, 46%, 98%);
+	}
 	.black-key {
-		background-color: black;
+		background-color: #000000;
 		border-radius: 0vw 0vw 0.5vw 0.5vw;
 		border: 1px solid #ffffff40;
+	}
+	.black-key.pressed {
+		background-color: hsl(0, 0%, 14%);
 	}
 </style>
