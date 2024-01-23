@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@astrojs/svelte": "^5.0.3",
+    "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vue": "^4.0.8",
     "astro": "^4.2.2",
     "svelte": "^4.2.9",
+    "tailwindcss": "^3.4.1",
     "tone": "^14.7.77",
     "vue": "^3.4.15"
   }
