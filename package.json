@@ -10,6 +10,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.2.2"
+    "@astrojs/svelte": "^5.0.3",
+    "@astrojs/vue": "^4.0.8",
+    "astro": "^4.2.2",
+    "svelte": "^4.2.9",
+    "tone": "^14.7.77",
+    "vue": "^3.4.15"
   }
 }
