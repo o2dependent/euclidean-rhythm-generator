@@ -1,139 +1,76 @@
 <script lang="ts">
+	import { octaveOffset, octavesShown } from "./../lib/piano/octaves.store.ts";
+	import { keyDown, keyUp, synth } from "./../lib/piano/synth.store.ts";
 	import * as Tone from "tone";
 	import OctaveOffsetInput from "./OctaveOffsetInput.svelte";
 	import { onMount } from "svelte";
-
-	let octaveOffset = 3;
-	let octavesShown = 2;
-
-	const whiteKeys = ["C", "D", "E", "F", "G", "A", "B"];
-	const blackKeys = ["C#", "D#", "F#", "G#", "A#"];
-	type Key = `${
-		| (typeof whiteKeys)[number]
-		| (typeof blackKeys)[number]}${number}`;
-
-	let synth: Tone.PolySynth;
-	let keysDown: Record<Key, boolean> = {};
-	let leftMouseDown = false;
+	import { keysDown } from "../lib/piano/keysDown.store.ts";
+	import { blackKeys, whiteKeys, type KeyNote } from "../lib/piano/keys.ts";
+	import { addPianoKeyboardListeners } from "../lib/piano/addPianoKeyboardListeners.ts";
 
 	onMount(() => {
-		synth = new Tone.PolySynth({
-			voice: Tone.Synth,
-			volume: -12,
-			options: { oscillator: { type: "sine" } },
-		}).toDestination();
+		synth.set(
+			new Tone.PolySynth({
+				voice: Tone.Synth,
+				volume: -12,
+				options: { oscillator: { type: "sine" } },
+			}).toDestination(),
+		);
 
-		const whiteKeyKeyboard = [
-			`a`,
-			`s`,
-			`d`,
-			`f`,
-			`g`,
-			`h`,
-			`j`,
-			`k`,
-			`l`,
-			`;`,
-			`'`,
-		];
-		const blackKeyKeyboard = ["w", "e", "t", "y", "u", "o", "p", "[", "]"];
-
-		const getKeyFromInput = (inputKey: string) => {
-			let keyboard = whiteKeyKeyboard;
-			let keys = whiteKeys;
-			if (blackKeyKeyboard.includes(inputKey)) {
-				keyboard = blackKeyKeyboard;
-				keys = blackKeys;
-			}
-			const valid = keyboard.includes(inputKey);
-			let octave = octaveOffset;
-			if (valid) {
-				if (keyboard.indexOf(inputKey) >= keys.length) {
-					octave = octave + 1;
-				}
-			}
-			const key: Key = `${
-				keys[keyboard.indexOf(inputKey) % keys.length]
-			}${octave}`;
-			return { key, valid };
-		};
-
-		window.addEventListener("keydown", (e) => {
-			const inputKey = e.key.toLowerCase();
-			const { key, valid } = getKeyFromInput(inputKey);
-
-			if (valid) keyDown(key);
-		});
-		window.addEventListener("keyup", (e) => {
-			const inputKey = e.key.toLowerCase();
-			const { key, valid } = getKeyFromInput(inputKey);
-
-			if (valid) keyUp(key);
-		});
+		const { removeListeners } = addPianoKeyboardListeners();
+		return () => removeListeners();
 	});
 
-	const keyDown = (key: Key) => {
-		if (keysDown[key]) return;
-		synth.triggerAttack(key);
-		keysDown[key] = true;
+	const keyMouseEnter = (key: KeyNote, octave: number) => () =>
+		$keysDown["mouse_left"] && keyDown(`${key}${octave + $octaveOffset}`);
+	const keyMouseDown = (key: KeyNote, octave: number) => () => {
+		keyDown(`${key}${octave + $octaveOffset}`);
+		keysDown.update((old) => ({ ...old, mouse_left: true }));
 	};
-	const keyUp = (key: Key) => {
-		if (!keysDown[key]) return;
-		synth.triggerRelease(key);
-		keysDown[key] = false;
+	const keyMouseUp = (key: KeyNote, octave: number) => () => {
+		keyUp(`${key}${octave + $octaveOffset}`);
+		keysDown.update((old) => ({ ...old, mouse_left: false }));
 	};
+	const keyMouseLeave = (key: KeyNote, octave: number) => () =>
+		keyUp(`${key}${octave + $octaveOffset}`);
 </script>
 
 <div id="settings">
-	<OctaveOffsetInput bind:octavesShown bind:octaveOffset />
+	<OctaveOffsetInput />
 </div>
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	id="piano"
 	on:mouseleave={() => {
-		leftMouseDown = false;
+		keysDown.update((old) => ({ ...old, mouse_left: false }));
 	}}
 	class="grid grid-cols-4 w-full"
 >
-	{#each new Array(octavesShown) as _, i}
+	{#each new Array($octavesShown) as _, i}
 		<div class="piano-octave-container aspect-video">
 			<div class="piano-white">
 				{#each whiteKeys as key}
 					<button
-						on:mouseenter={() =>
-							leftMouseDown && keyDown(`${key}${i + octaveOffset}`)}
-						on:mousedown={() => {
-							keyDown(`${key}${i + octaveOffset}`);
-							leftMouseDown = true;
-						}}
-						on:mouseup={() => {
-							keyUp(`${key}${i + octaveOffset}`);
-							leftMouseDown = false;
-						}}
-						on:mouseleave={() => keyUp(`${key}${i + octaveOffset}`)}
+						on:mouseenter={keyMouseEnter(key, i)}
+						on:mousedown={keyMouseDown(key, i)}
+						on:mouseup={keyMouseUp(key, i)}
+						on:mouseleave={keyMouseLeave(key, i)}
 						style="grid-area: {key};"
 						class="white-key"
-						class:pressed={keysDown[`${key}${i + octaveOffset}`]}
+						class:pressed={$keysDown[`${key}${i + $octaveOffset}`]}
 					></button>
 				{/each}
 			</div>
 			<div class="piano-black">
 				{#each blackKeys as key}
 					<button
-						on:mouseenter={() =>
-							leftMouseDown && keyDown(`${key}${i + octaveOffset}`)}
-						on:mousedown={() => {
-							keyDown(`${key}${i + octaveOffset}`);
-							leftMouseDown = true;
-						}}
-						on:mouseup={() => {
-							keyUp(`${key}${i + octaveOffset}`);
-							leftMouseDown = false;
-						}}
-						on:mouseleave={() => keyUp(`${key}${i + octaveOffset}`)}
+						on:mouseenter={keyMouseEnter(key, i)}
+						on:mousedown={keyMouseDown(key, i)}
+						on:mouseup={keyMouseUp(key, i)}
+						on:mouseleave={keyMouseLeave(key, i)}
 						style="grid-area: {key.replace('#', 's')};"
 						class="black-key"
-						class:pressed={keysDown[`${key}${i + octaveOffset}`]}
+						class:pressed={$keysDown[`${key}${i + $octaveOffset}`]}
 					></button>
 				{/each}
 			</div>
