@@ -1,21 +1,14 @@
 <script lang="ts">
 	import { octaveOffset, octavesShown } from "./../lib/piano/octaves.store.ts";
-	import { keyDown, keyUp, synth } from "./../lib/piano/synth.store.ts";
-	import * as Tone from "tone";
-	import OctaveOffsetInput from "./OctaveOffsetInput.svelte";
+	import { keyDown, keyUp, synthInit } from "./../lib/piano/synth.store.ts";
 	import { onMount } from "svelte";
 	import { keysDown } from "../lib/piano/keysDown.store.ts";
 	import { blackKeys, whiteKeys, type KeyNote } from "../lib/piano/keys.ts";
 	import { addPianoKeyboardListeners } from "../lib/piano/addPianoKeyboardListeners.ts";
+	import PianoSettings from "./PianoSettings.svelte";
 
 	onMount(() => {
-		synth.set(
-			new Tone.PolySynth({
-				voice: Tone.Synth,
-				volume: -12,
-				options: { oscillator: { type: "sine" } },
-			}).toDestination(),
-		);
+		synthInit();
 
 		const { removeListeners } = addPianoKeyboardListeners();
 		return () => removeListeners();
@@ -32,12 +25,10 @@
 		keysDown.update((old) => ({ ...old, mouse_left: false }));
 	};
 	const keyMouseLeave = (key: KeyNote, octave: number) => () =>
-		keyUp(`${key}${octave + $octaveOffset}`);
+		$keysDown["mouse_left"] && keyUp(`${key}${octave + $octaveOffset}`);
 </script>
 
-<div id="settings">
-	<OctaveOffsetInput />
-</div>
+<PianoSettings />
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	id="piano"
