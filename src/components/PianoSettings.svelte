@@ -1,11 +1,11 @@
 <script>
 	import OctaveOffsetInput from "./OctaveOffsetInput.svelte";
-	import WaveChanger from "./WaveChanger.svelte";
+	import SynthOscillatorSettings from "./SynthOscillatorSettings.svelte";
 </script>
 
 <div id="settings">
 	<OctaveOffsetInput />
-	<WaveChanger />
+	<SynthOscillatorSettings />
 </div>
 
 <style lang="postcss">
