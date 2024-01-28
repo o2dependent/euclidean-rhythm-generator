@@ -55,7 +55,6 @@ export const synthInit = () => {
 	// const tremolo = new Tone.Tremolo(9, 0.75).toDestination().start();
 
 	const newSynth = new Tone.PolySynth({
-		volume: 0,
 		options: {
 			oscillator: {
 				type: "sine",
