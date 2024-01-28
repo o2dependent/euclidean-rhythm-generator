@@ -2,12 +2,12 @@
 	import OctaveOffsetInput from "./OctaveOffsetInput.svelte";
 	import SynthEnvelopeSettings from "./SynthEnvelopeSettings.svelte";
 	import SynthOscillatorSettings from "./SynthOscillatorSettings.svelte";
-	import SynthVolumeSettings from "./SynthVolumeSettings.svelte";
+	import SynthGeneralSettings from "./SynthGeneralSettings.svelte";
 </script>
 
 <div id="settings">
 	<OctaveOffsetInput />
-	<SynthVolumeSettings />
+	<SynthGeneralSettings />
 	<SynthOscillatorSettings />
 	<SynthEnvelopeSettings />
 </div>
