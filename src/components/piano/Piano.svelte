@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { octaveOffset, octavesShown } from "./../lib/piano/octaves.store.ts";
-	import { keyDown, keyUp, synthInit } from "./../lib/piano/synth.store.ts";
+	import { octaveOffset, octavesShown } from "@/lib/piano/octaves.store.ts";
+	import { keyDown, keyUp, synthInit } from "@/lib/piano/synth.store.ts";
 	import { onMount } from "svelte";
-	import { keysDown } from "../lib/piano/keysDown.store.ts";
-	import { blackKeys, whiteKeys, type KeyNote } from "../lib/piano/keys.ts";
-	import { addPianoKeyboardListeners } from "../lib/piano/addPianoKeyboardListeners.ts";
+	import { keysDown } from "@/lib/piano/keysDown.store.ts";
+	import { blackKeys, whiteKeys, type KeyNote } from "@/lib/piano/keys.ts";
+	import { addPianoKeyboardListeners } from "@/lib/piano/addPianoKeyboardListeners.ts";
 	import PianoSettings from "./PianoSettings.svelte";
 
 	onMount(() => {

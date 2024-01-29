@@ -1,7 +1,7 @@
 <script lang="ts">
 	// @ts-ignore
 	import Knob from "svelte-knob";
-	import { synth } from "../lib/piano/synth.store";
+	import { synth } from "@/lib/piano/synth.store";
 	import { onMount } from "svelte";
 
 	let canvas: HTMLCanvasElement;

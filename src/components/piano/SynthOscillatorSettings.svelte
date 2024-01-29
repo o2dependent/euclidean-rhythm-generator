@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { synth } from "../lib/piano/synth.store";
+	import { synth } from "@/lib/piano/synth.store";
 	// @ts-ignore
 	import Knob from "svelte-knob";
-	import WaveIcons from "./WaveIcons.svelte";
+	import WaveIcons from "../WaveIcons.svelte";
 
 	const OSCILLATOR_WAVE_TYPES = [
 		"sine",

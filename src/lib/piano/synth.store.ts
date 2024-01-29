@@ -14,11 +14,11 @@ type RecursivePartial<T> = {
 export const synth = writable<Tone.PolySynth | null>(null);
 
 export const synthInit = () => {
-	// const dist = new Tone.Distortion(0.4).toDestination();
+	const dist = new Tone.Distortion(0.4).toDestination();
 	// const dist = new Tone.Distortion(0.05).toDestination();
 	// const freeverb = new Tone.Freeverb({ dampening: 100 }).toDestination();
 	// const chorus = new Tone.Chorus("2n", 0.1, 0.1).toDestination().start();
-	// const reverb = new Tone.Reverb({ decay: 0.25, wet: 1 }).toDestination();
+	const reverb = new Tone.Reverb({ decay: 0.25, wet: 1 }).toDestination();
 	// const bitcrush = new Tone.BitCrusher(5).toDestination();
 	// const cheby = new Tone.Chebyshev(4).toDestination();
 	// const autoWah = new Tone.AutoWah(50, 6, -30).toDestination();
@@ -30,15 +30,15 @@ export const synthInit = () => {
 	// })
 	// 	.toDestination()
 	// 	.start();
-	// const autoFilter = new Tone.AutoFilter({
-	// 	frequency: "8n",
-	// 	depth: 1,
-	// 	wet: 1,
-	// 	octaves: -3,
-	// 	type: "sine",
-	// })
-	// 	.toDestination()
-	// 	.start();
+	const autoFilter = new Tone.AutoFilter({
+		frequency: "8n",
+		depth: 1,
+		wet: 1,
+		octaves: -3,
+		type: "sine",
+	})
+		.toDestination()
+		.start();
 	// const feedbackDelay = new Tone.FeedbackDelay("32n", 0.25).toDestination();
 	// const shift = new Tone.FrequencyShifter(42).toDestination();
 
@@ -52,12 +52,12 @@ export const synthInit = () => {
 	// 	width: 0.15,
 	// 	wet: 1,
 	// }).toDestination();
-	// const tremolo = new Tone.Tremolo(9, 0.75).toDestination().start();
+	const tremolo = new Tone.Tremolo(0.5, 1).toDestination().start();
 
 	const newSynth = new Tone.PolySynth({
 		options: {
 			oscillator: {
-				type: "sine",
+				type: "square",
 			},
 		},
 		// envelope: {
@@ -67,8 +67,7 @@ export const synthInit = () => {
 		// 	release: 0.9,
 		// },
 		// portamento: 0,
-	}).toDestination();
-	// .chain(tremolo, autoFilter, reverb);
+	}).chain(dist, tremolo, reverb);
 	synth.set(newSynth);
 };
 

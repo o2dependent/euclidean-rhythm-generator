@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { octaveOffset, octavesShown } from "../lib/piano/octaves.store";
+	import { octaveOffset, octavesShown } from "@/lib/piano/octaves.store";
 </script>
 
 <div class="flex flex-col gap-1">
