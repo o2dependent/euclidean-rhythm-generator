@@ -7,53 +7,59 @@
 	} from "@/lib/piano/keys";
 	import { getPattern } from "euclidean-rhythms";
 	import { onMount } from "svelte";
+	import type { ChangeEventHandler } from "svelte/elements";
 	import * as Tone from "tone";
 
 	interface Instruments {
 		membrane: Tone.MembraneSynth | null;
 		pluck: Tone.PluckSynth | null;
 	}
+	type Instrument = {
+		name: keyof Instruments;
+		synth: Instruments[keyof Instruments];
+	};
+
+	const INSTRUMENT_TYPES: (keyof Instruments)[] = ["membrane", "pluck"];
 
 	interface Rhythm {
 		pulses: number;
 		steps: number;
-		instrument: keyof Instruments;
 		note: KeyNote;
 		octave: number;
 	}
 
-	let instruments: Instruments = {
-		membrane: null,
-		pluck: null,
-	};
+	let instruments: Instrument[] = [
+		{ name: "pluck", synth: null },
+		{ name: "membrane", synth: null },
+	];
 	let rhythms: Rhythm[] = [
 		{
 			pulses: 5,
 			steps: 16,
-			instrument: "pluck",
 			note: "C",
 			octave: 2,
 		},
 		{
 			pulses: 3,
 			steps: 8,
-			instrument: "membrane",
 			note: "C",
 			octave: 2,
 		},
 	];
 
 	const addRhythm = () => {
-		rhythms = [
+		const newRhythms: typeof rhythms = [
 			...rhythms,
 			{
 				pulses: 3,
 				steps: 8,
-				instrument: "membrane",
 				note: "C",
 				octave: 2,
 			},
 		];
+		changeInstrument(newRhythms.length - 1, INSTRUMENT_TYPES[0]);
+		rhythms = newRhythms;
+		console.log({ instruments });
 	};
 
 	let clock: Tone.Clock | null = null;
@@ -62,25 +68,32 @@
 
 	const onClock = (time: number) => {
 		beatIndex = beatIndex + 1;
-		rhythms.forEach((rhythm) => {
-			const { steps, pulses, instrument, note, octave } = rhythm;
+		rhythms.forEach((rhythm, i) => {
+			const { steps, pulses, note, octave } = rhythm;
 			const key = `${note ?? "C"}${octave ?? 2}`;
 			const pattern = getPattern(pulses, steps);
+			const instrument = instruments?.[i] ?? null;
 			if (pattern[beatIndex % steps]) {
-				instruments[instrument ?? "membrane"]?.triggerAttackRelease(
-					key ?? "C2",
-					"8n",
-					time,
-				);
+				instrument?.synth?.triggerAttackRelease(key ?? "C2", "8n", time);
 			}
 		});
 	};
 
 	onMount(() => {
-		instruments = {
-			membrane: new Tone.MembraneSynth().toDestination(),
-			pluck: new Tone.PluckSynth().toDestination(),
-		};
+		instruments = instruments.map((instrument) => {
+			if (instrument.synth) {
+				instrument.synth.dispose();
+				instrument.synth = null;
+			}
+			const newInstrument = { ...instrument };
+			if (instrument.name === "pluck") {
+				newInstrument.synth = new Tone.PluckSynth().toDestination();
+			} else if (instrument.name === "membrane") {
+				newInstrument.synth = new Tone.MembraneSynth().toDestination();
+			}
+			console.log({ newInstrument });
+			return newInstrument;
+		});
 		clock = new Tone.Clock(onClock, bpm);
 	});
 
@@ -93,12 +106,64 @@
 			beatIndex = 0;
 		}
 	};
+
+	const changeInstrument = (index: number, type: keyof Instruments) => {
+		let newInstruments = [...instruments];
+		if (index > newInstruments.length) {
+			console.error(
+				"Cannot change instrument at index greater than length + 1",
+			);
+			return;
+		} else if (index === newInstruments.length) {
+			console.log("FUCK YOU");
+			newInstruments = [...newInstruments, { name: type, synth: null }];
+		}
+		if (newInstruments[index].synth) {
+			newInstruments?.[index]?.synth?.dispose?.();
+			newInstruments[index].synth = null;
+		}
+		const newInstrument = { ...newInstruments[index] };
+		if (type === "pluck") {
+			newInstrument.synth = new Tone.PluckSynth().toDestination();
+		} else if (type === "membrane") {
+			newInstrument.synth = new Tone.MembraneSynth().toDestination();
+		}
+		newInstrument.name = type;
+		newInstruments[index] = newInstrument;
+		instruments = newInstruments;
+	};
+
+	const onChangeInstrument =
+		(index: number): ChangeEventHandler<HTMLSelectElement> =>
+		(e) => {
+			const type = (e.target as HTMLSelectElement).value as keyof Instruments;
+			changeInstrument(index, type);
+		};
+
+	const onNoteChange =
+		(index: number): ChangeEventHandler<HTMLSelectElement> =>
+		(e) => {
+			const note = (e.target as HTMLSelectElement).value as KeyNote;
+			rhythms = rhythms.map((r, j) => (j === index ? { ...r, note } : r));
+		};
+
+	const removeRhythm = (index: number) => () => {
+		const newRhythms = rhythms.filter((_, i) => i !== index);
+		instruments[index].synth?.dispose();
+		instruments[index].synth = null;
+		const newInstruments = instruments.filter((_, i) => i !== index);
+		rhythms = newRhythms;
+		instruments = newInstruments;
+	};
 </script>
 
 <div class="flex flex-col gap-1">
-	<button on:click={addRhythm}>Add Rhythm</button>
-	<button on:click={play}>play</button>
-	<button on:click={stop}>stop</button>
+	<button type="button" on:click={() => console.log({ instruments })}
+		>FUCK</button
+	>
+	<button type="button" on:click={addRhythm}>Add Rhythm</button>
+	<button type="button" on:click={play}>play</button>
+	<button type="button" on:click={stop}>stop</button>
 
 	{#each rhythms as rhythm, i}
 		<div class="flex flex-col gap-1">
@@ -139,26 +204,15 @@
 				/>
 				<p>Instrument</p>
 				<select
-					value={rhythm.instrument}
-					on:change={(e) => {
-						rhythms = rhythms.map((r, j) =>
-							j === i ? { ...r, instrument: e.currentTarget.value } : r,
-						);
-					}}
+					value={instruments?.[i]?.name ?? INSTRUMENT_TYPES[0]}
+					on:change={onChangeInstrument(i)}
 				>
-					{#each Object.keys(instruments) as instrument}
+					{#each INSTRUMENT_TYPES as instrument}
 						<option value={instrument}>{instrument}</option>
 					{/each}
 				</select>
 				<p>Note</p>
-				<select
-					value={rhythm.note}
-					on:change={(e) => {
-						rhythms = rhythms.map((r, j) =>
-							j === i ? { ...r, note: e.currentTarget.value } : r,
-						);
-					}}
-				>
+				<select value={rhythm.note} on:change={onNoteChange(i)}>
 					{#each [...whiteKeys, ...blackKeys] as key}
 						<option value={key}>{key}</option>
 					{/each}
@@ -175,9 +229,7 @@
 					min={0}
 					max={8}
 				/>
-				<button on:click={() => (rhythms = rhythms.filter((r) => r !== rhythm))}
-					>Remove</button
-				>
+				<button on:click={removeRhythm(i)}>Remove</button>
 			</div>
 			<div class="flex gap-1"></div>
 		</div>
