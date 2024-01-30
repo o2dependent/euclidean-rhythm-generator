@@ -17,6 +17,9 @@ dependencies:
   astro:
     specifier: ^4.2.2
     version: 4.2.2(typescript@5.3.3)
+  euclidean-rhythms:
+    specifier: ^3.1.1
+    version: 3.1.1
   svelte:
     specifier: ^4.2.9
     version: 4.2.9
@@ -1786,6 +1789,11 @@ packages:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
     dependencies:
       '@types/estree': 1.0.5
+    dev: false
+
+  /euclidean-rhythms@3.1.1:
+    resolution: {integrity: sha512-bLZG/dw0v85jsLCosHBgL7XbsRu+YwYuCZbjZp3sF8ts/D3sTPbdIujo2ZSKkpoyyIWfT7kfaeCP5ZdeCcGI0Q==}
+    engines: {node: '=16'}
     dev: false
 
   /eventemitter3@5.0.1:

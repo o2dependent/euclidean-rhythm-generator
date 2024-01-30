@@ -1,10 +1,12 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Piano from "@/components/piano/Piano.svelte";
+import EuclideanRhythm from "@/components/euclidean-rhythm/EuclideanRhythm.svelte";
 ---
 
 <Layout title="Welcome to Astro.">
 	<main class="h-full">
-		<Piano client:load />
+		<!-- <Piano client:load /> -->
+		<EuclideanRhythm client:load />
 	</main>
 </Layout>
