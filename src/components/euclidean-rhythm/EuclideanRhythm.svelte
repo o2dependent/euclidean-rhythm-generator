@@ -9,6 +9,7 @@
 	import { onMount } from "svelte";
 	import type { ChangeEventHandler } from "svelte/elements";
 	import * as Tone from "tone";
+	import Knob from "./Knob.svelte";
 
 	interface Instruments {
 		membrane: Tone.MembraneSynth | null;
@@ -26,6 +27,7 @@
 		steps: number;
 		note: KeyNote;
 		octave: number;
+		volume: number;
 	}
 
 	let instruments: Instrument[] = [
@@ -38,12 +40,14 @@
 			steps: 16,
 			note: "C",
 			octave: 2,
+			volume: 0,
 		},
 		{
 			pulses: 3,
 			steps: 8,
 			note: "C",
 			octave: 2,
+			volume: 0,
 		},
 	];
 
@@ -55,6 +59,7 @@
 				steps: 8,
 				note: "C",
 				octave: 2,
+				volume: 0,
 			},
 		];
 		changeInstrument(newRhythms.length - 1, INSTRUMENT_TYPES[0]);
@@ -159,6 +164,13 @@
 		rhythms = newRhythms;
 		instruments = newInstruments;
 	};
+
+	const changeVolume = (index: number) => (value: number) => {
+		rhythms = rhythms.map((r, j) =>
+			j === index ? { ...r, volume: value } : r,
+		);
+		instruments[index].synth?.volume.set({ value });
+	};
 </script>
 
 <div class="flex flex-col gap-1 bg-gray-200 h-full py-8 px-4">
@@ -202,7 +214,7 @@
 		<div class="flex flex-col gap-1">
 			<div class="flex gap-1">
 				<div class="flex flex-col">
-					<p>Pulses</p>
+					<p class="text-neutral-800">Pulses</p>
 					<div class="flex gap-2">
 						<div
 							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
@@ -267,7 +279,7 @@
 					</div>
 				</div>
 				<div class="flex flex-col">
-					<p>Steps</p>
+					<p class="text-neutral-800">Steps</p>
 					<div class="flex gap-2">
 						<div
 							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
@@ -330,7 +342,7 @@
 					</div>
 				</div>
 				<div class="flex flex-col">
-					<p>Instrument</p>
+					<p class="text-neutral-800">Instrument</p>
 					<select
 						class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box text-neutral-700"
 						value={instruments?.[i]?.name ?? INSTRUMENT_TYPES[0]}
@@ -342,7 +354,7 @@
 					</select>
 				</div>
 				<div class="flex flex-col">
-					<p>Note</p>
+					<p class="text-neutral-800">Note</p>
 					<select
 						class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box text-neutral-700"
 						value={rhythm.note}
@@ -354,7 +366,7 @@
 					</select>
 				</div>
 				<div class="flex flex-col">
-					<p>Octave</p>
+					<p class="text-neutral-800">Octave</p>
 					<div class="flex gap-2">
 						<div
 							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
@@ -413,6 +425,15 @@
 							</button>
 						</div>
 					</div>
+				</div>
+				<div class="flex flex-col">
+					<p class="text-neutral-800">Volume</p>
+					<Knob
+						value={rhythm.volume}
+						onChange={changeVolume(i)}
+						min={-12}
+						max={12}
+					/>
 				</div>
 				<div class="flex justify-center items-center">
 					<button class="btn sm error w-12 h-full" on:click={removeRhythm(i)}>
