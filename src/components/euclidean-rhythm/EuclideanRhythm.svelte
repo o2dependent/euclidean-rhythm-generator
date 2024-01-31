@@ -21,6 +21,8 @@
 	};
 
 	const INSTRUMENT_TYPES: (keyof Instruments)[] = ["membrane", "pluck"];
+	const VOLUME_MAX = 12;
+	const VOLUME_MIN = -24;
 
 	interface Rhythm {
 		pulses: number;
@@ -169,7 +171,12 @@
 		rhythms = rhythms.map((r, j) =>
 			j === index ? { ...r, volume: value } : r,
 		);
-		instruments[index].synth?.volume.set({ value });
+		if (value === VOLUME_MIN) {
+			value = -Infinity;
+		}
+		instruments[index].synth?.volume.set({
+			value,
+		});
 	};
 </script>
 
@@ -431,8 +438,8 @@
 					<Knob
 						value={rhythm.volume}
 						onChange={changeVolume(i)}
-						min={-12}
-						max={12}
+						min={VOLUME_MIN}
+						max={VOLUME_MAX}
 					/>
 				</div>
 				<div class="flex justify-center items-center">

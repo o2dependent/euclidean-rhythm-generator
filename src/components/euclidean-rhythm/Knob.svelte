@@ -21,12 +21,16 @@
 	const mousedown = (e: MouseEvent) => {
 		window.addEventListener("mousemove", mousemove);
 		window.addEventListener("mouseup", mouseup);
+		document.body.style.userSelect = "none";
+		document.body.style.cursor = "ns-resize";
 		prevY = e.clientY;
 	};
 
 	const mouseup = (e: MouseEvent) => {
 		window.removeEventListener("mousemove", mousemove);
 		window.removeEventListener("mouseup", mouseup);
+		document.body.style.userSelect = "";
+		document.body.style.cursor = "";
 		prevY = null;
 	};
 </script>
@@ -71,7 +75,7 @@
 
 	.indicator {
 		content: "";
-		transform: rotate(var(--rotate));
+		transform: rotate(calc(var(--rotate) - 180deg));
 		transform-origin: 50% 200%;
 
 		@apply block top-0 left-1/2 w-0.5 h-1/4 bg-red-400 absolute;
