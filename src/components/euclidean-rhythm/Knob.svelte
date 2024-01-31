@@ -20,21 +20,21 @@
 
 	const mousedown = (e: MouseEvent) => {
 		window.addEventListener("mousemove", mousemove);
-		window.addEventListener("mouseup", mouseup);
-		document.body.style.userSelect = "none";
-		document.body.style.cursor = "ns-resize";
 		prevY = e.clientY;
 	};
 
 	const mouseup = (e: MouseEvent) => {
 		window.removeEventListener("mousemove", mousemove);
-		window.removeEventListener("mouseup", mouseup);
-		document.body.style.userSelect = "";
-		document.body.style.cursor = "";
 		prevY = null;
 	};
 </script>
 
+{#if typeof prevY === "number"}
+	<div
+		class="top-0 left-0 fixed w-full h-full z-50 cursor-ns-resize select-none"
+		on:mouseup={mouseup}
+	></div>
+{/if}
 <button on:mousedown={mousedown} class="knob">
 	<span
 		style="--rotate: {(((value ?? 0) - (min ?? 0)) /
