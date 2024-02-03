@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getPattern } from "euclidean-rhythms";
 	import { VOLUME_MIN, VOLUME_MAX, INSTRUMENT_TYPES } from "./consts.ts";
 	import type { Instruments, Rhythm } from "./types.ts";
 	import Knob from "./Knob.svelte";
@@ -15,9 +16,12 @@
 		rhythms,
 	} from "./rhythms-instruments.store.ts";
 	import { blackKeys, whiteKeys, type KeyNote } from "@/lib/piano/keys.ts";
+	import { beatIndex } from "./clock.store.ts";
 
 	export let rhythm: Rhythm;
 	export let index: number;
+
+	$: pattern = getPattern(rhythm.pulses, rhythm.steps);
 
 	const onChangeInstrument: ChangeEventHandler<HTMLSelectElement> = (e) => {
 		const type = (e.target as HTMLSelectElement).value as keyof Instruments;
@@ -32,8 +36,8 @@
 
 <div class="flex flex-col">
 	<div class="flex gap-1 -mt-1.5">
-		<div class="flex gap-2 pt-1.5">
-			<div class="h-full flex items-center justify-center mr-4">
+		<div class="flex gap-2 pt-1.5 w-full">
+			<div class="h-full flex items-center justify-center mr-auto pr-4">
 				<Speaker />
 			</div>
 			<div class="flex flex-col h-full w-12">
@@ -192,34 +196,59 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="flex justify-center items-center">
-			<button
-				class="btn sm error w-12 h-full"
-				on:click={() => removeRhythm(index)}
-			>
-				<svg
-					width="15"
-					height="15"
-					viewBox="0 0 15 15"
-					fill="none"
-					class=""
-					xmlns="http://www.w3.org/2000/svg"
+			<div class="flex justify-center items-center">
+				<button
+					class="btn sm error w-12 h-full"
+					on:click={() => removeRhythm(index)}
 				>
-					<path
-						d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H5H10H11.5C11.7761 3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H11V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4 12V4L3.5 4C3.22386 4 3 3.77614 3 3.5ZM5 4H10V12H5V4Z"
-						fill="currentColor"
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 15 15"
+						fill="none"
+						class=""
+						xmlns="http://www.w3.org/2000/svg"
 					>
-					</path>
-				</svg>
-			</button>
+						<path
+							d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H5H10H11.5C11.7761 3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H11V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4 12V4L3.5 4C3.22386 4 3 3.77614 3 3.5ZM5 4H10V12H5V4Z"
+							fill="currentColor"
+							fill-rule="evenodd"
+							clip-rule="evenodd"
+						>
+						</path>
+					</svg>
+				</button>
+			</div>
+			<div class="ml-auto h-full flex items-center justify-center pl-4">
+				<Speaker />
+			</div>
 		</div>
 	</div>
-	<div class="flex gap-1">
+	<div class="flex gap-1 my-2">
+		<div class="step-visualizer-controller peer"></div>
 		{#each new Array(rhythm.steps) as _, i}
-			<div class="w-full h-2 bg-neutral-300 inset-box"></div>
+			<div
+				class:!bg-blue-300={pattern[i] && !($beatIndex % rhythm.steps === i)}
+				class:!bg-blue-400={pattern[i] && $beatIndex % rhythm.steps === i}
+				class:!bg-neutral-100={!pattern[i]}
+				class="w-full h-2 inset-box relative transition-all duration-75"
+			>
+				<div
+					class:!bg-blue-400={pattern[i] && $beatIndex % rhythm.steps === i}
+					class:!blur={pattern[i] && $beatIndex % rhythm.steps === i}
+					class="absolute top-0 left-0 w-full h-full transition-all duration-75 opacity-25"
+				></div>
+				<div
+					class:!bg-blue-500={pattern[i] && $beatIndex % rhythm.steps === i}
+					class:!blur-sm={pattern[i] && $beatIndex % rhythm.steps === i}
+					class="absolute top-0 left-0 w-full h-full transition-all duration-100 opacity-25"
+				></div>
+			</div>
 		{/each}
 	</div>
 </div>
+
+<style lang="postcss">
+	.step-visualizer-controller {
+	}
+</style>

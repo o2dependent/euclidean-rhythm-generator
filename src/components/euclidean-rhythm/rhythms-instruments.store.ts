@@ -57,7 +57,6 @@ export const changeInstrument = (index: number, type: keyof Instruments) => {
 		console.error("Cannot change instrument at index greater than length + 1");
 		return;
 	} else if (index === newInstruments.length) {
-		console.log("FUCK YOU");
 		newInstruments = [...newInstruments, { name: type, synth: null }];
 	}
 	if (newInstruments[index].synth) {
@@ -66,6 +65,11 @@ export const changeInstrument = (index: number, type: keyof Instruments) => {
 	}
 	const newInstrument = { ...newInstruments[index] };
 	const synth = getInstrumentSynth(type);
+	const $rhythms = get(rhythms);
+	const rhythm = $rhythms[index];
+	if (synth && rhythm) {
+		synth.volume.set({ value: rhythm?.volume });
+	}
 	newInstrument.synth = synth;
 	newInstrument.name = type;
 	newInstruments[index] = newInstrument;
