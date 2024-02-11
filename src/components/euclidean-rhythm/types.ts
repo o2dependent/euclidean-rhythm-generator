@@ -17,4 +17,5 @@ export interface Rhythm {
 	note: KeyNote;
 	octave: number;
 	volume: number;
+	offset: number;
 }

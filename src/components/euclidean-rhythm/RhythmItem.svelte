@@ -8,6 +8,7 @@
 	import {
 		changeInstrument,
 		changeOctave,
+		changeOffset,
 		changePulses,
 		changeSteps,
 		changeVolume,
@@ -133,6 +134,48 @@
 				</div>
 			</div>
 			<div class="flex flex-col">
+				<div class="flex gap-2">
+					<div
+						class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
+					>
+						<p>{rhythm.offset}</p>
+					</div>
+					<div class="flex flex-col">
+						<button
+							type="button"
+							on:click={() => changeOffset(index, 1)}
+							class="btn sm w-8 h-8"
+						>
+							<svg
+								width="15"
+								height="15"
+								viewBox="0 0 15 15"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"></path></svg
+							>
+						</button>
+						<button
+							type="button"
+							on:click={() => changeOffset(index, -1)}
+							class="btn sm w-8 h-8"
+						>
+							<svg
+								class="rotate-180"
+								width="15"
+								height="15"
+								viewBox="0 0 15 15"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"></path></svg
+							>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="flex flex-col">
 				<select
 					class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box text-neutral-700"
 					value={$instruments?.[index]?.name ?? INSTRUMENT_TYPES[0]}
@@ -227,20 +270,28 @@
 	<div class="flex gap-1 my-2">
 		<div class="step-visualizer-controller peer"></div>
 		{#each new Array(rhythm.steps) as _, i}
+			{@const isBeat =
+				($beatIndex - rhythm.offset) % rhythm.steps ===
+				(i - rhythm.offset) % rhythm.steps}
+
+			{@const patternItem = pattern[(i - rhythm.offset) % rhythm.steps]}
 			<div
-				class:!bg-blue-300={pattern[i] && !($beatIndex % rhythm.steps === i)}
-				class:!bg-blue-400={pattern[i] && $beatIndex % rhythm.steps === i}
-				class:!bg-neutral-100={!pattern[i]}
+				class:!bg-blue-300={patternItem && !isBeat}
+				class:!bg-blue-400={patternItem && isBeat}
+				class:!bg-neutral-100={!patternItem}
+				class:!bg-blue-200={!patternItem && isBeat}
 				class="w-full h-2 inset-box relative transition-all duration-75"
 			>
 				<div
-					class:!bg-blue-400={pattern[i] && $beatIndex % rhythm.steps === i}
-					class:!blur={pattern[i] && $beatIndex % rhythm.steps === i}
+					class:!bg-blue-400={patternItem && isBeat}
+					class:!bg-blue-200={!patternItem && isBeat}
+					class:!blur={isBeat}
 					class="absolute top-0 left-0 w-full h-full transition-all duration-75 opacity-25"
 				></div>
 				<div
-					class:!bg-blue-500={pattern[i] && $beatIndex % rhythm.steps === i}
-					class:!blur-sm={pattern[i] && $beatIndex % rhythm.steps === i}
+					class:!bg-blue-500={patternItem && isBeat}
+					class:!bg-blue-200={!patternItem && isBeat}
+					class:!blur-sm={isBeat}
 					class="absolute top-0 left-0 w-full h-full transition-all duration-100 opacity-25"
 				></div>
 			</div>

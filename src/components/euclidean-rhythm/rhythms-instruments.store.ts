@@ -18,6 +18,7 @@ export const rhythms = writable<RhythmsStore>([
 		note: "C",
 		octave: 2,
 		volume: 0,
+		offset: 0,
 	},
 	{
 		pulses: 3,
@@ -25,6 +26,7 @@ export const rhythms = writable<RhythmsStore>([
 		note: "C",
 		octave: 2,
 		volume: 0,
+		offset: 0,
 	},
 	{
 		pulses: 5,
@@ -32,6 +34,7 @@ export const rhythms = writable<RhythmsStore>([
 		note: "G",
 		octave: 2,
 		volume: 0,
+		offset: 0,
 	},
 ]);
 
@@ -86,6 +89,7 @@ export const addRhythm = () => {
 			note: "C",
 			octave: 2,
 			volume: 0,
+			offset: 0,
 		},
 	];
 	changeInstrument(newRhythms.length - 1, INSTRUMENT_TYPES[0]);
@@ -144,6 +148,22 @@ export const changePulses = (index: number, inc: number) => {
 	}
 	const newRhythms = $rhythms.map((r, j) =>
 		j === index ? { ...r, pulses: value } : r,
+	);
+	rhythms.set(newRhythms);
+};
+
+export const changeOffset = (index: number, inc: number) => {
+	const $rhythms = get(rhythms);
+	const rhythm = $rhythms[index];
+	if (!rhythm) return;
+	let value = rhythm.offset + inc;
+	if (value < 0) {
+		value = 0;
+	} else if (value > rhythm.steps) {
+		value = rhythm.steps;
+	}
+	const newRhythms = $rhythms.map((r, j) =>
+		j === index ? { ...r, offset: value } : r,
 	);
 	rhythms.set(newRhythms);
 };
