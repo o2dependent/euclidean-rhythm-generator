@@ -1,4 +1,3 @@
-import { getPattern } from "euclidean-rhythms";
 import { get, writable } from "svelte/store";
 import * as Tone from "tone";
 import { instruments, rhythms } from "./rhythms-instruments.store";
@@ -13,11 +12,10 @@ export const onClock = (time: number) => {
 	const $rhythms = get(rhythms);
 	const $instruments = get(instruments);
 	$rhythms.forEach((rhythm, i) => {
-		const { steps, pulses, note, octave, offset } = rhythm;
+		const { steps, pulses, note, octave, offset, pattern } = rhythm;
 		const key = `${note ?? "C"}${octave ?? 2}`;
-		const pattern = getPattern(pulses, steps);
 		const instrument = $instruments?.[i] ?? null;
-		if (pattern[(newBeatIndex - offset) % steps]) {
+		if (pattern[newBeatIndex % steps]) {
 			instrument?.synth?.triggerAttackRelease(key ?? "C2", "8n", time);
 		}
 	});

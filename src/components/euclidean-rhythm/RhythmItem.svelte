@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { getPattern } from "euclidean-rhythms";
 	import { VOLUME_MIN, VOLUME_MAX, INSTRUMENT_TYPES } from "./consts.ts";
 	import type { Instruments, Rhythm } from "./types.ts";
 	import Knob from "./Knob.svelte";
@@ -21,8 +20,6 @@
 
 	export let rhythm: Rhythm;
 	export let index: number;
-
-	$: pattern = getPattern(rhythm.pulses, rhythm.steps);
 
 	const onChangeInstrument: ChangeEventHandler<HTMLSelectElement> = (e) => {
 		const type = (e.target as HTMLSelectElement).value as keyof Instruments;
@@ -269,29 +266,27 @@
 	</div>
 	<div class="flex gap-1 my-2">
 		<div class="step-visualizer-controller peer"></div>
-		{#each new Array(rhythm.steps) as _, i}
-			{@const isBeat =
+		{#each rhythm.pattern as beat, i}
+			{@const isPlaying =
 				($beatIndex - rhythm.offset) % rhythm.steps ===
 				(i - rhythm.offset) % rhythm.steps}
-
-			{@const patternItem = pattern[(i - rhythm.offset) % rhythm.steps]}
 			<div
-				class:!bg-blue-300={patternItem && !isBeat}
-				class:!bg-blue-400={patternItem && isBeat}
-				class:!bg-neutral-100={!patternItem}
-				class:!bg-blue-200={!patternItem && isBeat}
+				class:!bg-blue-300={beat && !isPlaying}
+				class:!bg-blue-400={beat && isPlaying}
+				class:!bg-neutral-100={!beat}
+				class:!bg-blue-200={!beat && isPlaying}
 				class="w-full h-2 inset-box relative transition-all duration-75"
 			>
 				<div
-					class:!bg-blue-400={patternItem && isBeat}
-					class:!bg-blue-200={!patternItem && isBeat}
-					class:!blur={isBeat}
+					class:!bg-blue-400={beat && isPlaying}
+					class:!bg-blue-200={!beat && isPlaying}
+					class:!blur={isPlaying}
 					class="absolute top-0 left-0 w-full h-full transition-all duration-75 opacity-25"
 				></div>
 				<div
-					class:!bg-blue-500={patternItem && isBeat}
-					class:!bg-blue-200={!patternItem && isBeat}
-					class:!blur-sm={isBeat}
+					class:!bg-blue-500={beat && isPlaying}
+					class:!bg-blue-200={!beat && isPlaying}
+					class:!blur-sm={isPlaying}
 					class="absolute top-0 left-0 w-full h-full transition-all duration-100 opacity-25"
 				></div>
 			</div>

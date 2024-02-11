@@ -18,4 +18,5 @@ export interface Rhythm {
 	octave: number;
 	volume: number;
 	offset: number;
+	pattern: number[];
 }

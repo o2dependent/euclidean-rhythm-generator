@@ -2,6 +2,7 @@ import { writable, get } from "svelte/store";
 import type { Instrument, Instruments, Rhythm } from "./types";
 import * as Tone from "tone";
 import { INSTRUMENT_TYPES, VOLUME_MIN } from "./consts";
+import { getPattern } from "euclidean-rhythms";
 
 type InstrumentsStore = Instrument[];
 export const instruments = writable<InstrumentsStore>([
@@ -19,6 +20,7 @@ export const rhythms = writable<RhythmsStore>([
 		octave: 2,
 		volume: 0,
 		offset: 0,
+		pattern: getPattern(5, 16),
 	},
 	{
 		pulses: 3,
@@ -27,6 +29,7 @@ export const rhythms = writable<RhythmsStore>([
 		octave: 2,
 		volume: 0,
 		offset: 0,
+		pattern: getPattern(3, 8),
 	},
 	{
 		pulses: 5,
@@ -35,8 +38,20 @@ export const rhythms = writable<RhythmsStore>([
 		octave: 2,
 		volume: 0,
 		offset: 0,
+		pattern: getPattern(5, 8),
 	},
 ]);
+
+const getPatternFromRhythm = (rhythm: Rhythm) => {
+	// get pattern using pulses and steps then offset the pattern
+	const { pulses, steps, offset } = rhythm;
+	const pattern = getPattern(pulses, steps);
+	const newPattern = [
+		...pattern.slice(steps - offset),
+		...pattern.slice(0, steps - offset),
+	];
+	return newPattern;
+};
 
 export const getInstrumentSynth = (type: keyof Instruments) => {
 	let synth = null;
@@ -90,6 +105,7 @@ export const addRhythm = () => {
 			octave: 2,
 			volume: 0,
 			offset: 0,
+			pattern: getPattern(3, 8),
 		},
 	];
 	changeInstrument(newRhythms.length - 1, INSTRUMENT_TYPES[0]);
@@ -130,9 +146,10 @@ export const changeSteps = (index: number, inc: number) => {
 	} else if (newPulses < 0) {
 		newPulses = 0;
 	}
-	const newRhythms = $rhythms.map((r, j) =>
-		j === index ? { ...r, pulses: newPulses, steps: newSteps } : r,
-	);
+	rhythm.pulses = newPulses;
+	rhythm.steps = newSteps;
+	rhythm.pattern = getPatternFromRhythm(rhythm);
+	const newRhythms = $rhythms.map((r, j) => (j === index ? rhythm : r));
 	rhythms.set(newRhythms);
 };
 
@@ -140,15 +157,15 @@ export const changePulses = (index: number, inc: number) => {
 	const $rhythms = get(rhythms);
 	const rhythm = $rhythms[index];
 	if (!rhythm) return;
-	let value = rhythm.pulses + inc;
-	if (value > rhythm.steps) {
-		value = rhythm.steps;
-	} else if (value < 0) {
-		value = 0;
+	let newPulses = rhythm.pulses + inc;
+	if (newPulses > rhythm.steps) {
+		newPulses = rhythm.steps;
+	} else if (newPulses < 0) {
+		newPulses = 0;
 	}
-	const newRhythms = $rhythms.map((r, j) =>
-		j === index ? { ...r, pulses: value } : r,
-	);
+	rhythm.pulses = newPulses;
+	rhythm.pattern = getPatternFromRhythm(rhythm);
+	const newRhythms = $rhythms.map((r, j) => (j === index ? rhythm : r));
 	rhythms.set(newRhythms);
 };
 
@@ -156,15 +173,15 @@ export const changeOffset = (index: number, inc: number) => {
 	const $rhythms = get(rhythms);
 	const rhythm = $rhythms[index];
 	if (!rhythm) return;
-	let value = rhythm.offset + inc;
-	if (value < 0) {
-		value = 0;
-	} else if (value > rhythm.steps) {
-		value = rhythm.steps;
+	let newOffset = rhythm.offset + inc;
+	if (newOffset < 0) {
+		newOffset = 0;
+	} else if (newOffset > rhythm.steps) {
+		newOffset = rhythm.steps;
 	}
-	const newRhythms = $rhythms.map((r, j) =>
-		j === index ? { ...r, offset: value } : r,
-	);
+	rhythm.offset = newOffset;
+	rhythm.pattern = getPatternFromRhythm(rhythm);
+	const newRhythms = $rhythms.map((r, j) => (j === index ? rhythm : r));
 	rhythms.set(newRhythms);
 };
 
