@@ -6,9 +6,9 @@ import { getPattern } from "euclidean-rhythms";
 
 type InstrumentsStore = Instrument[];
 export const instruments = writable<InstrumentsStore>([
-	{ name: "pluck", synth: null },
-	{ name: "membrane", synth: null },
-	{ name: "synth", synth: null },
+	{ name: INSTRUMENT_TYPES[1], synth: null },
+	{ name: INSTRUMENT_TYPES[5], synth: null },
+	{ name: INSTRUMENT_TYPES[7], synth: null },
 ]);
 
 type RhythmsStore = Rhythm[];
@@ -17,8 +17,8 @@ export const rhythms = writable<RhythmsStore>([
 		pulses: 5,
 		steps: 16,
 		note: "C",
-		octave: 2,
-		volume: 0,
+		octave: 4,
+		volume: -5,
 		offset: 0,
 		pattern: getPattern(5, 16),
 	},
@@ -26,8 +26,8 @@ export const rhythms = writable<RhythmsStore>([
 		pulses: 3,
 		steps: 8,
 		note: "C",
-		octave: 2,
-		volume: 0,
+		octave: 4,
+		volume: -10,
 		offset: 0,
 		pattern: getPattern(3, 8),
 	},
@@ -35,8 +35,8 @@ export const rhythms = writable<RhythmsStore>([
 		pulses: 5,
 		steps: 8,
 		note: "G",
-		octave: 2,
-		volume: 0,
+		octave: 4,
+		volume: -6,
 		offset: 0,
 		pattern: getPattern(5, 8),
 	},
@@ -53,22 +53,36 @@ const getPatternFromRhythm = (rhythm: Rhythm) => {
 	return newPattern;
 };
 
-export const getInstrumentSynth = (type: keyof Instruments) => {
+export const getInstrumentSynth = (
+	type: (typeof INSTRUMENT_TYPES)[number],
+	volume: number,
+) => {
 	let synth = null;
-
-	if (type === "pluck") {
-		synth = new Tone.PluckSynth().toDestination();
-	} else if (type === "membrane") {
-		synth = new Tone.MembraneSynth().toDestination();
-	} else if (type === "synth") {
-		synth = new Tone.Synth().toDestination();
-	} else if (type === "metal") {
-		synth = new Tone.MetalSynth().toDestination();
-	}
+	// get what is inside of "()" ex. "starlight(C).wav" -> "C"
+	const urlNote = `${type.match(/\(([^)]+)\)/)?.[1] ?? "C"}4`;
+	synth = new Tone.Sampler({
+		urls: {
+			[urlNote]: `${type}`,
+		},
+		volume,
+		baseUrl: "https://o2dependent.github.io/audio/",
+	}).toDestination();
+	// if (type === "pluck") {
+	// 	// synth = new Tone.PluckSynth().toDestination();
+	// } else if (type === "membrane") {
+	// 	synth = new Tone.MembraneSynth().toDestination();
+	// } else if (type === "synth") {
+	// 	synth = new Tone.Synth().toDestination();
+	// } else if (type === "metal") {
+	// 	synth = new Tone.MetalSynth().toDestination();
+	// }
 	return synth;
 };
 
-export const changeInstrument = (index: number, type: keyof Instruments) => {
+export const changeInstrument = (
+	index: number,
+	type: (typeof INSTRUMENT_TYPES)[number],
+) => {
 	const $instruments = get(instruments);
 	let newInstruments: InstrumentsStore = [...$instruments];
 	if (index > newInstruments.length) {
@@ -82,12 +96,9 @@ export const changeInstrument = (index: number, type: keyof Instruments) => {
 		newInstruments[index].synth = null;
 	}
 	const newInstrument = { ...newInstruments[index] };
-	const synth = getInstrumentSynth(type);
 	const $rhythms = get(rhythms);
 	const rhythm = $rhythms[index];
-	if (synth && rhythm) {
-		synth.volume.set({ value: rhythm?.volume });
-	}
+	const synth = getInstrumentSynth(type, rhythm?.volume ?? -10);
 	newInstrument.synth = synth;
 	newInstrument.name = type;
 	newInstruments[index] = newInstrument;
@@ -102,8 +113,8 @@ export const addRhythm = () => {
 			pulses: 3,
 			steps: 8,
 			note: "C",
-			octave: 2,
-			volume: 0,
+			octave: 4,
+			volume: -8,
 			offset: 0,
 			pattern: getPattern(3, 8),
 		},
@@ -199,15 +210,17 @@ export const changeVolume = (index: number, value: number) => {
 };
 
 export const instrumentsOnMount = () => {
+	const $rhythms = get(rhythms);
 	instruments.update(($instruments) =>
-		$instruments.map((instrument) => {
+		$instruments.map((instrument, i) => {
 			if (instrument.synth) {
 				instrument.synth.dispose();
 				instrument.synth = null;
 			}
+			const rhythm = $rhythms?.[i];
 			const type = instrument.name;
 			const newInstrument = { ...instrument };
-			const synth = getInstrumentSynth(type);
+			const synth = getInstrumentSynth(type, rhythm?.volume ?? -10);
 			newInstrument.synth = synth;
 			return newInstrument;
 		}),

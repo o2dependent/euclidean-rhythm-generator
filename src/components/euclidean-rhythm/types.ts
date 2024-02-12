@@ -1,5 +1,6 @@
 import type { KeyNote } from "@/lib/piano/keys";
 import * as Tone from "tone";
+import type { INSTRUMENT_TYPES } from "./consts";
 
 export interface Instruments {
 	membrane: Tone.MembraneSynth | null;
@@ -8,8 +9,8 @@ export interface Instruments {
 	metal: Tone.MetalSynth | null;
 }
 export type Instrument = {
-	name: keyof Instruments;
-	synth: Instruments[keyof Instruments];
+	name: (typeof INSTRUMENT_TYPES)[number];
+	synth: Tone.Sampler | null;
 };
 export interface Rhythm {
 	pulses: number;

@@ -70,7 +70,7 @@
 			-17px 18px 2px rgba(0, 0, 0, 0.00526),
 			-18px 19px 2px rgba(0, 0, 0, 0.00263),
 			-19px 20px 2px transparent;
-		@apply aspect-square rounded-full bg-neutral-200 relative;
+		@apply aspect-square rounded-full bg-neutral-200 relative w-12;
 	}
 
 	.indicator {
