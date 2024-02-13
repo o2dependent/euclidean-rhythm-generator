@@ -1,5 +1,5 @@
 <style lang="postcss">
-	:global(.inset-box) {
+	:global(.realist-inset-box) {
 		box-shadow:
 			inset 0px -1px 2px rgba(255, 255, 255, 0.05),
 			inset 1px -2px 2px rgba(255, 255, 255, 0.4737),
@@ -16,7 +16,7 @@
 			inset -19px 20px 2px transparent;
 		@apply border border-neutral-100 bg-neutral-100;
 	}
-	:global(.btn.sm) {
+	:global(.realist-btn.sm) {
 		box-shadow:
 			inset -2px 0 1px 1px rgba(255, 255, 255, 0.7),
 			inset 0 0 8px 8px rgba(128, 128, 128, 0.1),
@@ -35,8 +35,8 @@
 			-19px 20px 2px transparent;
 		@apply border-b-2 border-neutral-400 -top-0.5 duration-100;
 	}
-	:global(.btn.sm.pressed),
-	:global(.btn.sm:active) {
+	:global(.realist-btn.sm.pressed),
+	:global(.realist-btn.sm:active) {
 		box-shadow:
 			inset -2px 0 1px 1px rgba(255, 255, 255, 0.7),
 			inset 0 0 8px 8px rgba(128, 128, 128, 0.1),
@@ -55,7 +55,7 @@
 			-19px 20px 1px transparent;
 		@apply border-b border-neutral-500 top-px duration-100;
 	}
-	:global(.btn) {
+	:global(.realist-btn) {
 		box-shadow:
 			inset -2px 0 1px 1px rgba(255, 255, 255, 0.7),
 			inset 0 0 8px 8px rgba(128, 128, 128, 0.1),
@@ -84,7 +84,7 @@
 		/* border-bottom: 10px solid rgb(170, 170, 170); */
 		@apply border-b-8 border-neutral-400 bg-gradient-to-r from-neutral-100 to-neutral-300 transition-all duration-200 mx-px -top-1 relative flex items-center justify-center ease-out;
 	}
-	:global(.btn.error) {
+	:global(.realist-btn.error) {
 		box-shadow:
 			inset -2px 0 1px 1px rgba(255, 155, 155, 0.7),
 			inset 0 0 8px 8px rgba(128, 28, 28, 0.1),
@@ -112,20 +112,20 @@
 			-19px 20px 2px transparent;
 		@apply border-b-8 border-red-600 bg-gradient-to-r from-red-400 to-red-500;
 	}
-	:global(.btn.error svg) {
+	:global(.realist-btn.error svg) {
 		@apply stroke-red-200;
 	}
-	:global(.btn.error.pressed),
-	:global(.btn.error:active) {
+	:global(.realist-btn.error.pressed),
+	:global(.realist-btn.error:active) {
 		@apply border-red-700 bg-gradient-to-r from-red-500 to-red-600;
 	}
-	:global(.btn svg) {
+	:global(.realist-btn svg) {
 		width: 20px;
 		height: 20px;
 		stroke: #999999;
 	}
-	:global(.btn.pressed),
-	:global(.btn:active) {
+	:global(.realist-btn.pressed),
+	:global(.realist-btn:active) {
 		box-shadow:
 			inset -1px 0 1px 1px rgba(255, 255, 255, 0.4),
 			inset 0 0 8px 8px rgba(128, 128, 128, 0.1),

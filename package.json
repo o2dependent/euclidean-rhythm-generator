@@ -20,5 +20,8 @@
     "tailwindcss": "^3.4.1",
     "tone": "^14.7.77",
     "vue": "^3.4.15"
+  },
+  "devDependencies": {
+    "daisyui": "latest"
   }
 }
