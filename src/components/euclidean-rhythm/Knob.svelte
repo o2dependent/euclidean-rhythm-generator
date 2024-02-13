@@ -48,14 +48,14 @@
 
 <style lang="postcss">
 	.knob {
-		@apply aspect-square rounded-full btn relative w-12;
+		@apply aspect-square rounded-full btn relative w-12 ring-1 ring-primary;
 	}
 	.indicator {
 		content: "";
 		transform: rotate(calc(var(--rotate) - 180deg));
 		transform-origin: 50% 200%;
 
-		@apply block top-0 left-1/2 w-0.5 h-1/4 bg-red-400 absolute;
+		@apply block top-0 left-1/2 w-0.5 h-1/4 bg-primary absolute;
 	}
 
 	.realist-knob {
