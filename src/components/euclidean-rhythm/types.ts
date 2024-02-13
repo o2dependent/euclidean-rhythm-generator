@@ -1,6 +1,6 @@
 import type { KeyNote } from "@/lib/piano/keys";
 import * as Tone from "tone";
-import type { INSTRUMENT_TYPES } from "./consts";
+import type { INSTRUMENT_TYPES, chordsObj } from "./consts";
 
 export interface Instruments {
 	membrane: Tone.MembraneSynth | null;
@@ -15,9 +15,13 @@ export type Instrument = {
 export interface Rhythm {
 	pulses: number;
 	steps: number;
-	note: KeyNote;
 	octave: number;
 	volume: number;
 	offset: number;
 	pattern: number[];
+	arp: {
+		enabled: boolean;
+		chord: keyof typeof chordsObj | null;
+	};
+	notes: `${KeyNote}${"{{0}}" | "{{1}}"}`[];
 }

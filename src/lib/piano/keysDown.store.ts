@@ -4,6 +4,6 @@ import type { Key } from "./keys";
 type MouseKeys = "left" | "middle" | "right";
 type MouseButtons = `mouse_${MouseKeys}`;
 
-type KeyDownKeys = Key | MouseButtons;
+export type KeyDownKeys = Key | MouseButtons;
 
 export const keysDown = writable<Partial<Record<KeyDownKeys, boolean>>>({});

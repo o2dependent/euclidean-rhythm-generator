@@ -1,4 +1,14 @@
 <style lang="postcss">
+	:global(body) {
+		background-image: repeating-linear-gradient(
+			45deg,
+			var(--fallback-b1, oklch(var(--b1))),
+			var(--fallback-b1, oklch(var(--b1))) 13px,
+			var(--fallback-b2, oklch(var(--b2))) 13px,
+			var(--fallback-b2, oklch(var(--b2))) 14px
+		);
+		background-size: 40px 40px;
+	}
 	:global(.realist-inset-box) {
 		box-shadow:
 			inset 0px -1px 2px rgba(255, 255, 255, 0.05),

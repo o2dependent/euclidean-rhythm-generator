@@ -16,29 +16,41 @@ export const rhythms = writable<RhythmsStore>([
 	{
 		pulses: 5,
 		steps: 16,
-		note: "C",
+		notes: ["C{{0}}"],
 		octave: 4,
 		volume: -5,
 		offset: 0,
 		pattern: getPattern(5, 16),
+		arp: {
+			enabled: false,
+			chord: null,
+		},
 	},
 	{
 		pulses: 3,
 		steps: 8,
-		note: "C",
+		notes: ["C{{0}}"],
 		octave: 4,
 		volume: -10,
 		offset: 0,
 		pattern: getPattern(3, 8),
+		arp: {
+			enabled: false,
+			chord: null,
+		},
 	},
 	{
 		pulses: 5,
 		steps: 8,
-		note: "G",
+		notes: ["G{{0}}"],
 		octave: 4,
 		volume: -6,
 		offset: 0,
 		pattern: getPattern(5, 8),
+		arp: {
+			enabled: false,
+			chord: null,
+		},
 	},
 ]);
 
@@ -112,11 +124,15 @@ export const addRhythm = () => {
 		{
 			pulses: 3,
 			steps: 8,
-			note: "C",
+			notes: ["C{{0}}"],
 			octave: 4,
 			volume: -8,
 			offset: 0,
 			pattern: getPattern(3, 8),
+			arp: {
+				enabled: false,
+				chord: null,
+			},
 		},
 	];
 	changeInstrument(newRhythms.length - 1, INSTRUMENT_TYPES[0]);

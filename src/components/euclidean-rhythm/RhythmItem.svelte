@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { VOLUME_MIN, VOLUME_MAX, INSTRUMENT_TYPES } from "./consts.ts";
-	import type { Instruments, Rhythm } from "./types.ts";
+	import type { Rhythm } from "./types.ts";
 	import Knob from "./Knob.svelte";
 	import Speaker from "./Speaker.svelte";
 	import type { ChangeEventHandler } from "svelte/elements";
@@ -15,10 +15,34 @@
 		removeRhythm,
 		rhythms,
 	} from "./rhythms-instruments.store.ts";
-	import { blackKeys, whiteKeys, type KeyNote } from "@/lib/piano/keys.ts";
+	import { type KeyNote, type Key } from "@/lib/piano/keys.ts";
+	import PianoKeys from "../PianoKeys.svelte";
 
 	export let rhythm: Rhythm;
 	export let index: number;
+
+	$: notes = rhythm.notes;
+	$: keysDown = notes.reduce(
+		(acc, note, i) => ({
+			...acc,
+			[`${note.replaceAll(/(\{|\})/g, "")}`]: true,
+		}),
+		{},
+	) as Partial<Record<Key, boolean>>;
+
+	const keyMouseClick = (e: CustomEvent<{ key: KeyNote; i: 0 | 1 }>) => {
+		const { key, i } = e.detail;
+
+		let newNotes = [...notes];
+		if (newNotes.some((n) => n === `${key}{{${i}}}`)) {
+			newNotes = newNotes.filter((n) => n !== `${key}{{${i}}}`);
+		} else {
+			newNotes = [...newNotes, `${key}{{${i}}}`];
+		}
+		rhythms.set(
+			$rhythms.map((r, j) => (j === index ? { ...r, notes: newNotes } : r)),
+		);
+	};
 
 	const onChangeInstrument: ChangeEventHandler<HTMLSelectElement> = (e) => {
 		const type = (e.target as HTMLSelectElement)
@@ -39,172 +63,162 @@
 			.join("/");
 </script>
 
-<div class="flex flex-col">
+<div class="flex flex-col bg-base-200 rounded-xl px-4 pt-4 mb-2">
 	<div class="flex gap-1 -mt-1.5">
 		<div class="flex gap-2 pt-1.5 w-full">
-			<div class="h-full flex items-center justify-center mr-auto pr-4">
-				<Speaker />
-			</div>
-			<div class="flex flex-col gap-2">
-				<div class="div flex gap-2">
-					<div class="flex flex-col h-full w-12">
-						<Knob
-							value={rhythm.volume}
-							onChange={(v) => changeVolume(index, v)}
-							min={VOLUME_MIN}
-							max={VOLUME_MAX}
-						/>
-					</div>
-					<div class="flex flex-col">
-						<div class="flex gap-2">
-							<div
-								class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
-							>
-								<p>{rhythm.pulses}</p>
-							</div>
-							<div class="flex flex-col">
-								<button
-									type="button"
-									on:click={() => changePulses(index, 1)}
-									class="btn sm w-8 h-8"
-								>
-									<svg
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-								<button
-									type="button"
-									on:click={() => changePulses(index, -1)}
-									class="btn sm w-8 h-8"
-								>
-									<svg
-										class="rotate-180"
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-							</div>
+			<div class="div flex gap-2">
+				<div class="flex flex-col h-full w-12">
+					<Knob
+						value={rhythm.volume}
+						onChange={(v) => changeVolume(index, v)}
+						min={VOLUME_MIN}
+						max={VOLUME_MAX}
+					/>
+				</div>
+				<div class="flex flex-col">
+					<div class="flex gap-2">
+						<div
+							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box"
+						>
+							<p>{rhythm.pulses}</p>
 						</div>
-					</div>
-					<div class="flex flex-col">
-						<div class="flex gap-2">
-							<div
-								class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
+						<div class="flex flex-col">
+							<button
+								type="button"
+								on:click={() => changePulses(index, 1)}
+								class="btn btn-square"
 							>
-								<p>{rhythm.steps}</p>
-							</div>
-							<div class="flex flex-col">
-								<button
-									type="button"
-									on:click={() => changeSteps(index, 1)}
-									class="btn sm w-8 h-8"
+								<svg
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
 								>
-									<svg
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-								<button
-									type="button"
-									on:click={() => changeSteps(index, -1)}
-									class="btn sm w-8 h-8"
-								>
-									<svg
-										class="rotate-180"
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-							</div>
-						</div>
-					</div>
-					<div class="flex flex-col">
-						<div class="flex gap-2">
-							<div
-								class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
+							<button
+								type="button"
+								on:click={() => changePulses(index, -1)}
+								class="btn btn-square"
 							>
-								<p>{rhythm.offset}</p>
-							</div>
-							<div class="flex flex-col">
-								<button
-									type="button"
-									on:click={() => changeOffset(index, 1)}
-									class="btn sm w-8 h-8"
+								<svg
+									class="rotate-180"
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
 								>
-									<svg
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-								<button
-									type="button"
-									on:click={() => changeOffset(index, -1)}
-									class="btn sm w-8 h-8"
-								>
-									<svg
-										class="rotate-180"
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-							</div>
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
 						</div>
 					</div>
 				</div>
-				<div class="flex gap-1">
-					<div class="flex flex-col">
-						<select
-							class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box text-neutral-700"
-							value={$instruments?.[index]?.name ?? INSTRUMENT_TYPES[0]}
-							on:change={onChangeInstrument}
+				<div class="flex flex-col">
+					<div class="flex gap-2">
+						<div
+							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box"
 						>
-							{#each INSTRUMENT_TYPES as instrument}
-								<option value={instrument}
-									>{formatInstrumentName(instrument)}</option
+							<p>{rhythm.steps}</p>
+						</div>
+						<div class="flex flex-col">
+							<button
+								type="button"
+								on:click={() => changeSteps(index, 1)}
+								class="btn btn-square"
+							>
+								<svg
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
 								>
-							{/each}
-						</select>
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
+							<button
+								type="button"
+								on:click={() => changeSteps(index, -1)}
+								class="btn btn-square"
+							>
+								<svg
+									class="rotate-180"
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
+						</div>
 					</div>
-					<div class="flex flex-col">
+				</div>
+				<div class="flex flex-col">
+					<div class="flex gap-2">
+						<div
+							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box"
+						>
+							<p>{rhythm.offset}</p>
+						</div>
+						<div class="flex flex-col">
+							<button
+								type="button"
+								on:click={() => changeOffset(index, 1)}
+								class="btn btn-square"
+							>
+								<svg
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
+							<button
+								type="button"
+								on:click={() => changeOffset(index, -1)}
+								class="btn btn-square"
+							>
+								<svg
+									class="rotate-180"
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="flex gap-1">
+				<div class="flex flex-col">
+					<select
+						class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box"
+						value={$instruments?.[index]?.name ?? INSTRUMENT_TYPES[0]}
+						on:change={onChangeInstrument}
+					>
+						{#each INSTRUMENT_TYPES as instrument}
+							<option value={instrument}
+								>{formatInstrumentName(instrument)}</option
+							>
+						{/each}
+					</select>
+				</div>
+				<!-- <div class="flex flex-col">
 						<select
-							class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box text-neutral-700"
+							class="h-8 flex items-center bg-transparent px-2 appearance-none w-max justify-center rounded-sm inset-box "
 							value={rhythm.note}
 							on:change={onNoteChange}
 						>
@@ -212,56 +226,53 @@
 								<option value={key}>{key}</option>
 							{/each}
 						</select>
-					</div>
-					<div class="flex flex-col">
-						<div class="flex gap-2">
-							<div
-								class="w-8 h-16 flex items-center justify-center rounded-sm inset-box text-neutral-700"
+					</div> -->
+				<div class="flex flex-col">
+					<div class="flex gap-2">
+						<div
+							class="w-8 h-16 flex items-center justify-center rounded-sm inset-box"
+						>
+							<p>{rhythm.octave}</p>
+						</div>
+						<div class="flex flex-col">
+							<button
+								type="button"
+								on:click={() => changeOctave(index, 1)}
+								class="btn btn-square"
 							>
-								<p>{rhythm.octave}</p>
-							</div>
-							<div class="flex flex-col">
-								<button
-									type="button"
-									on:click={() => changeOctave(index, 1)}
-									class="btn sm w-8 h-8"
+								<svg
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
 								>
-									<svg
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-								<button
-									type="button"
-									on:click={() => changeOctave(index, -1)}
-									class="btn sm w-8 h-8"
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
+							<button
+								type="button"
+								on:click={() => changeOctave(index, -1)}
+								class="btn btn-square"
+							>
+								<svg
+									class="rotate-180"
+									width="15"
+									height="15"
+									viewBox="0 0 15 15"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
 								>
-									<svg
-										class="rotate-180"
-										width="15"
-										height="15"
-										viewBox="0 0 15 15"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"
-										></path></svg
-									>
-								</button>
-							</div>
+									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+								</svg>
+							</button>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="flex justify-center items-center">
 				<button
-					class="btn sm error w-12 h-full"
+					class="btn btn-square btn-error error"
 					on:click={() => removeRhythm(index)}
 				>
 					<svg
@@ -282,10 +293,26 @@
 					</svg>
 				</button>
 			</div>
-			<div class="ml-auto h-full flex items-center justify-center pl-4">
-				<Speaker />
-			</div>
 		</div>
 	</div>
 	<!-- <StepVisualizer {rhythm} /> -->
+	<div class="flex justify-between items-center w-full gap-2">
+		<div class="h-full flex items-center justify-center">
+			<Speaker />
+		</div>
+		<div
+			style="--white-pressed: hsl(200, 86%, 85%);--black-pressed: hsl(200, 36%, 44%);"
+			class="w-full max-w-lg"
+		>
+			<PianoKeys
+				{keysDown}
+				octaveOffset={0}
+				octavesShown={2}
+				on:keyMouseClick={keyMouseClick}
+			/>
+		</div>
+		<div class="h-full flex items-center justify-center">
+			<Speaker />
+		</div>
+	</div>
 </div>

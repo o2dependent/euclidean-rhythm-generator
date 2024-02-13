@@ -20,10 +20,8 @@
 	});
 </script>
 
-<div class="flex flex-col gap-1 bg-gray-200 h-full py-8 px-4">
-	<div
-		class="flex flex-col gap-1 max-w-screen-md w-full mx-auto bg-gray-50 overflow-hidden shadow-lg shadow-black/50 aspect-square"
-	>
+<div class="flex flex-col gap-1 h-full py-8 px-4">
+	<div class="flex flex-col gap-1 mx-auto container p-4">
 		<div class="flex justify-between items-center px-4 py-2">
 			<button
 				class="btn aspect-square w-12"

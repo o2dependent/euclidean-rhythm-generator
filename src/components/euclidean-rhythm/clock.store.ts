@@ -12,11 +12,16 @@ export const onClock = (time: number) => {
 	const $rhythms = get(rhythms);
 	const $instruments = get(instruments);
 	$rhythms.forEach((rhythm, i) => {
-		const { steps, pulses, note, octave, offset, pattern } = rhythm;
-		const key = `${note ?? "C"}${octave ?? 2}`;
+		const { steps, pulses, notes, octave, offset, pattern } = rhythm;
+
+		const keys = notes.map((note) =>
+			note
+				.replace("{{0}}", octave.toString())
+				.replace("{{1}}", (octave + 1).toString()),
+		);
 		const instrument = $instruments?.[i] ?? null;
 		if (pattern[newBeatIndex % steps]) {
-			instrument?.synth?.triggerAttackRelease(key ?? "C2", "8n", time);
+			instrument?.synth?.triggerAttackRelease(keys, "8n", time);
 		}
 	});
 	beatIndex.set(newBeatIndex);

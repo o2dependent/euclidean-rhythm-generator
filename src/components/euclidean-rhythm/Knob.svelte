@@ -1,16 +1,18 @@
 <script lang="ts">
 	export let value: number;
-	export let onChange: (value: number) => void = () => {};
+	export let onChange: ((value: number) => void) | undefined = undefined;
 	export let min: number;
 	export let max: number;
+	export let step: number | undefined = undefined;
+
+	$: _step = step ?? (max - min) / 400;
 
 	let prevY: number | null = null;
 
 	const mousemove = (e: MouseEvent) => {
 		if (prevY === null) return;
 		const delta = prevY - e.clientY;
-		const step = (max - min) / 400;
-		let newValue = value + delta * step;
+		let newValue = value + delta * _step;
 		if (newValue < min) newValue = min;
 		else if (newValue > max) newValue = max;
 		if (typeof onChange === "undefined") value = newValue;
@@ -46,6 +48,17 @@
 
 <style lang="postcss">
 	.knob {
+		@apply aspect-square rounded-full btn relative w-12;
+	}
+	.indicator {
+		content: "";
+		transform: rotate(calc(var(--rotate) - 180deg));
+		transform-origin: 50% 200%;
+
+		@apply block top-0 left-1/2 w-0.5 h-1/4 bg-red-400 absolute;
+	}
+
+	.realist-knob {
 		box-shadow:
 			inset 0 -3px 1px rgba(0, 0, 0, 0.2),
 			inset 0 3px 1px rgba(255, 255, 255, 0.9),
@@ -73,7 +86,7 @@
 		@apply aspect-square rounded-full bg-neutral-200 relative w-12;
 	}
 
-	.indicator {
+	.realist-indicator {
 		content: "";
 		transform: rotate(calc(var(--rotate) - 180deg));
 		transform-origin: 50% 200%;

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { chords } from "./../lib/chords.ts";
 	import * as Tone from "tone";
 
 	let loops: Tone.Loop[];
@@ -16,8 +15,6 @@
 				synth.triggerAttackRelease(chord, "2n", time);
 			},
 			[
-				["2n", chords("Gm", 4)],
-				["6n", chords("Asus4", 4)],
 				// ["0:2", chords("Dm", 4)],
 				// ["0:4", chords("Bb", 4)],
 				// ["0:6", chords("A", 4)],

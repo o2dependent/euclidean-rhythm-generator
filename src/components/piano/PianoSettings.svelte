@@ -16,10 +16,10 @@
 	#settings {
 		display: flex;
 		flex-wrap: wrap;
-		@apply bg-slate-300;
+		@apply bg-base-300 text-base-content;
 	}
 	:global(#settings > div) {
 		padding: 0.5rem;
-		@apply border-l border-r border-slate-500;
+		@apply border-l border-r border-base-100;
 	}
 </style>

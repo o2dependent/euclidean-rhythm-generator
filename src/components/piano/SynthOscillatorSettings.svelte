@@ -1,7 +1,6 @@
 <script lang="ts">
+	import Knob from "./../euclidean-rhythm/Knob.svelte";
 	import { synth } from "@/lib/piano/synth.store";
-	// @ts-ignore
-	import Knob from "svelte-knob";
 	import WaveIcons from "../WaveIcons.svelte";
 
 	const OSCILLATOR_WAVE_TYPES = [
@@ -49,11 +48,11 @@
 
 <div class="flex flex-col gap-1">
 	<p>Oscillator Type</p>
-	<div class="grid grid-cols-4">
+	<div class="join grid grid-cols-4">
 		{#each OSCILLATOR_WAVE_TYPES as type}
 			<button
-				class="btn"
-				class:active={type === oscillatorType}
+				class="btn join-item"
+				class:btn-primary={type === oscillatorType}
 				on:click={() => (oscillatorType = type)}
 			>
 				<WaveIcons {type} />
@@ -61,27 +60,62 @@
 		{/each}
 	</div>
 	<p>Modulation</p>
-	<Knob
+	<div class="join grid grid-cols-4">
+		{#each OSCILLATOR_MODULATION_TYPES as type, i}
+			<button
+				class="btn join-item"
+				class:btn-primary={i === oscillatorModulationIndex}
+				on:click={() => (oscillatorModulationIndex = i)}
+			>
+				{valueDisplayFunction(i)}
+			</button>
+		{/each}
+	</div>
+	<!-- <Knob
 		bind:value={oscillatorModulationIndex}
 		step={1}
 		min={0}
 		max={OSCILLATOR_MODULATION_TYPES.length - 1}
-		{valueDisplayFunction}
-	/>
+	/> -->
 	<p>Partials</p>
-	<Knob
+	<!-- <Knob
 		bind:value={oscillatorPartial}
 		step={1}
 		min={0}
 		max={OSCILLATOR_MAX_PARTIAL}
-	/>
+	/> -->
+	<p>{oscillatorPartial}</p>
+	<div class="join">
+		<button
+			type="button"
+			on:click={() => (oscillatorPartial = oscillatorPartial + 1)}
+			class="btn btn-square btn-join"
+		>
+			<svg
+				width="15"
+				height="15"
+				viewBox="0 0 15 15"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+			</svg>
+		</button>
+		<button
+			type="button"
+			on:click={() => (oscillatorPartial = oscillatorPartial - 1)}
+			class="btn btn-square btn-join"
+		>
+			<svg
+				class="rotate-180"
+				width="15"
+				height="15"
+				viewBox="0 0 15 15"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
+			</svg>
+		</button>
+	</div>
 </div>
-
-<style lang="postcss">
-	.btn {
-		@apply aspect-square p-2 bg-slate-400;
-	}
-	.btn.active {
-		@apply bg-slate-500;
-	}
-</style>
