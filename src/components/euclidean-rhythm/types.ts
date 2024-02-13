@@ -21,7 +21,7 @@ export interface Rhythm {
 	pattern: number[];
 	arp: {
 		enabled: boolean;
-		chord: keyof typeof chordsObj | null;
+		dir: "asc" | "desc";
 	};
 	notes: `${KeyNote}${"{{0}}" | "{{1}}"}`[];
 }
