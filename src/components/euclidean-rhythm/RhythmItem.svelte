@@ -67,6 +67,55 @@
 	<div class="flex gap-1 -mt-1.5">
 		<div class="flex gap-2 pt-1.5 w-full">
 			<div class="div flex gap-2">
+				<div class="form-control">
+					<label class="label cursor-pointer">
+						<span class="label-text">Arp:</span>
+						<input
+							type="checkbox"
+							class="toggle toggle-sm"
+							checked={rhythm.arp.enabled}
+							on:change={(e) => {
+								rhythms.update((oldRhythms) =>
+									oldRhythms.map((r, j) =>
+										j === index
+											? {
+													...r,
+													arp: { ...r.arp, enabled: e.currentTarget.checked },
+												}
+											: r,
+									),
+								);
+							}}
+						/>
+					</label>
+				</div>
+				<div class="form-control">
+					<label class="label cursor-pointer">
+						<span class="label-text">Asc</span>
+						<input
+							type="checkbox"
+							class="toggle toggle-sm"
+							checked={rhythm.arp.dir === "desc"}
+							on:change={(e) => {
+								rhythms.update((oldRhythms) =>
+									oldRhythms.map((r, j) =>
+										j === index
+											? {
+													...r,
+													arp: {
+														...r.arp,
+														dir: e.currentTarget.checked ? "desc" : "asc",
+													},
+												}
+											: r,
+									),
+								);
+							}}
+						/>
+						<span class="label-text">Desc</span>
+					</label>
+				</div>
+
 				<div class="flex flex-col h-full w-12">
 					<Knob
 						value={rhythm.volume}

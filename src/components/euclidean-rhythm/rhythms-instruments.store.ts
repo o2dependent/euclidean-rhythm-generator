@@ -1,14 +1,19 @@
 import { writable, get } from "svelte/store";
 import type { Instrument, Instruments, Rhythm } from "./types";
 import * as Tone from "tone";
-import { INSTRUMENT_TYPES, VOLUME_MIN } from "./consts";
+import { INSTRUMENT_TYPES, VOLUME_MIN, chordsObj } from "./consts";
 import { getPattern } from "euclidean-rhythms";
 
 type InstrumentsStore = Instrument[];
 export const instruments = writable<InstrumentsStore>([
-	{ name: INSTRUMENT_TYPES[1], synth: null },
-	{ name: INSTRUMENT_TYPES[5], synth: null },
-	{ name: INSTRUMENT_TYPES[7], synth: null },
+	{ name: "Cymatics - Trap/hihat/Yellow.wav", synth: null },
+	{ name: "Cymatics - Trap/hihat/OuttaHere.wav", synth: null },
+	{ name: "Cymatics - Trap/hihat/French.wav", synth: null },
+	{ name: "Cymatics - Orchid/bass/PerfectDonk(C).wav", synth: null },
+	{ name: "Cymatics - Orchid/pluck/Water(C).wav", synth: null },
+	{ name: "Cymatics - Trap/rimshot/Sword.wav", synth: null },
+	{ name: "Cymatics - Trap/vocals/Chihuahua.wav", synth: null },
+	{ name: "Cymatics - Orchid/pluck/Water(C).wav", synth: null },
 ]);
 
 type RhythmsStore = Rhythm[];
@@ -16,9 +21,9 @@ export const rhythms = writable<RhythmsStore>([
 	{
 		pulses: 5,
 		steps: 16,
-		notes: ["C{{0}}", "D{{0}}", "E{{0}}", "F{{0}}", "G{{0}}"],
-		octave: 4,
-		volume: -5,
+		notes: ["C{{0}}", "E{{0}}", "G{{0}}"],
+		octave: 3,
+		volume: -6,
 		offset: 0,
 		pattern: getPattern(5, 16),
 		arp: {
@@ -27,13 +32,13 @@ export const rhythms = writable<RhythmsStore>([
 		},
 	},
 	{
-		pulses: 3,
+		pulses: 7,
 		steps: 8,
-		notes: ["C{{0}}"],
+		notes: ["C{{0}}", "E{{0}}"],
 		octave: 4,
-		volume: -10,
-		offset: 0,
-		pattern: getPattern(3, 8),
+		volume: -14,
+		offset: 1,
+		pattern: getPattern(7, 8),
 		arp: {
 			enabled: false,
 			dir: "asc",
@@ -44,11 +49,76 @@ export const rhythms = writable<RhythmsStore>([
 		steps: 8,
 		notes: ["G{{0}}"],
 		octave: 4,
-		volume: -6,
+		volume: -10,
 		offset: 0,
 		pattern: getPattern(5, 8),
 		arp: {
 			enabled: false,
+			dir: "asc",
+		},
+	},
+	{
+		pulses: 1,
+		steps: 16,
+		notes: ["B{{0}}", "C{{1}}"],
+		octave: 3,
+		volume: -5,
+		offset: 0,
+		pattern: getPattern(1, 16),
+		arp: {
+			enabled: true,
+			dir: "asc",
+		},
+	},
+	{
+		pulses: 5,
+		steps: 16,
+		notes: ["C{{0}}", "E{{0}}", "G{{0}}"],
+		octave: 3,
+		volume: -5,
+		offset: 0,
+		pattern: getPattern(5, 16),
+		arp: {
+			enabled: true,
+			dir: "asc",
+		},
+	},
+	{
+		pulses: 3,
+		steps: 24,
+		notes: ["B{{0}}", "C{{1}}"],
+		octave: 4,
+		volume: -5,
+		offset: 0,
+		pattern: getPattern(3, 24),
+		arp: {
+			enabled: true,
+			dir: "asc",
+		},
+	},
+	{
+		pulses: 1,
+		steps: 16,
+		notes: ["B{{0}}", "C{{1}}"],
+		octave: 3,
+		volume: -5,
+		offset: 0,
+		pattern: getPattern(1, 16),
+		arp: {
+			enabled: true,
+			dir: "asc",
+		},
+	},
+	{
+		pulses: 5,
+		steps: 32,
+		notes: ["C{{0}}", "E{{0}}", "G{{0}}"],
+		octave: 4,
+		volume: -5,
+		offset: 3,
+		pattern: getPattern(5, 32),
+		arp: {
+			enabled: true,
 			dir: "asc",
 		},
 	},
@@ -71,7 +141,7 @@ export const getInstrumentSynth = (
 ) => {
 	let synth = null;
 	// get what is inside of "()" ex. "starlight(C).wav" -> "C"
-	const urlNote = `${type.match(/\(([^)]+)\)/)?.[1] ?? "C"}4`;
+	const urlNote = `${type.match(/\(([^)]+)\)/)?.[1] ?? "C"}4`.replace("s", "#");
 	synth = new Tone.Sampler({
 		urls: {
 			[urlNote]: `${type}`,

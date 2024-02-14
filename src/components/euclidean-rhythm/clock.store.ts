@@ -7,21 +7,21 @@ export const bpm = writable<number>(5);
 export const beatIndex = writable<number>(0);
 export const playing = writable<boolean>(false);
 
-const reduceArp = (dir: "asc" | "desc", curIndex: number) => {
-	if (dir === "asc")
-		return (acc: number, v: number, i: number) =>
-			curIndex > i ? acc + v : acc;
-	else
-		return (acc: number, v: number, i: number) =>
-			curIndex < i ? acc + v : acc;
+const getBeatsPlayedInBar = (pattern: number[], curIndex: number) => {
+	return pattern.reduce(
+		(acc: number, v: number, i: number) => (curIndex > i ? acc + v : acc),
+		0,
+	);
 };
 
 export const onClock = (time: number) => {
-	let newBeatIndex = get(beatIndex) + 1;
+	console.log(time);
+	const $beatIndex = get(beatIndex);
+	const newBeatIndex = $beatIndex + 1;
 	const $rhythms = get(rhythms);
 	const $instruments = get(instruments);
 	$rhythms.forEach((rhythm, i) => {
-		const { steps, pulses, notes, octave, offset, pattern, arp } = rhythm;
+		const { steps, pulses, notes, octave, pattern, arp } = rhythm;
 
 		const keys = notes.map((note) =>
 			note
@@ -29,29 +29,32 @@ export const onClock = (time: number) => {
 				.replace("{{1}}", (octave + 1).toString()),
 		);
 		const instrument = $instruments?.[i] ?? null;
-		const curIndex = newBeatIndex % steps;
-		if (pattern[curIndex]) {
+		const curIndex = $beatIndex % steps;
+		if (pattern?.[curIndex]) {
 			if (arp.enabled) {
-				const barsPlayed = Math.floor(newBeatIndex / steps);
+				const barsPlayed = Math.floor($beatIndex / steps);
 				// get how many played beats have been played
-				const beatsPlayed =
-					barsPlayed * pulses + pattern.reduce(reduceArp(arp.dir, curIndex), 0);
+				const notesPlayedInBar = getBeatsPlayedInBar(pattern, curIndex);
+				const beatsPlayed = barsPlayed * pulses + notesPlayedInBar;
 				// get the current note index
-				const curNoteIndex = beatsPlayed % notes.length;
-
-				const curNote = notes[curNoteIndex]
-					.replace("{{0}}", octave.toString())
-					.replace("{{1}}", (octave + 1).toString());
+				let curNoteIndex = beatsPlayed % notes.length;
+				if (arp.dir === "desc") curNoteIndex = notes.length - curNoteIndex - 1;
 				console.log({
 					barsPlayed,
 					beatsPlayed,
-					curNote,
 					curNoteIndex,
-					notes,
+					notesPlayedInBar,
+					pattern,
 				});
+				const curNote =
+					notes?.[curNoteIndex]
+						?.replace("{{0}}", octave.toString())
+						?.replace("{{1}}", (octave + 1).toString()) ?? null;
 
-				instrument?.synth?.triggerAttackRelease(curNote, "8n", time);
-			} else instrument?.synth?.triggerAttackRelease(keys, "8n", time);
+				if (curNote === null) return;
+
+				instrument?.synth?.triggerAttackRelease?.(curNote, "8n", time);
+			} else instrument?.synth?.triggerAttackRelease?.(keys, "8n", time);
 		}
 	});
 	beatIndex.set(newBeatIndex);
