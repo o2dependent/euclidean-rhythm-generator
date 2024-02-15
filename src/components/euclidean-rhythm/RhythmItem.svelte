@@ -17,6 +17,7 @@
 	} from "./rhythms-instruments.store.ts";
 	import { type KeyNote, type Key } from "@/lib/piano/keys.ts";
 	import PianoKeys from "../PianoKeys.svelte";
+	import ArrowIcon from "../icon/ArrowIcon.svelte";
 
 	export let rhythm: Rhythm;
 	export let index: number;
@@ -137,31 +138,14 @@
 								on:click={() => changePulses(index, 1)}
 								class="btn btn-square"
 							>
-								<svg
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon />
 							</button>
 							<button
 								type="button"
 								on:click={() => changePulses(index, -1)}
 								class="btn btn-square"
 							>
-								<svg
-									class="rotate-180"
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon dir="down" />
 							</button>
 						</div>
 					</div>
@@ -179,31 +163,14 @@
 								on:click={() => changeSteps(index, 1)}
 								class="btn btn-square"
 							>
-								<svg
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon />
 							</button>
 							<button
 								type="button"
 								on:click={() => changeSteps(index, -1)}
 								class="btn btn-square"
 							>
-								<svg
-									class="rotate-180"
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon dir="down" />
 							</button>
 						</div>
 					</div>
@@ -221,31 +188,14 @@
 								on:click={() => changeOffset(index, 1)}
 								class="btn btn-square"
 							>
-								<svg
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon />
 							</button>
 							<button
 								type="button"
 								on:click={() => changeOffset(index, -1)}
 								class="btn btn-square"
 							>
-								<svg
-									class="rotate-180"
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon dir="down" />
 							</button>
 						</div>
 					</div>
@@ -289,31 +239,14 @@
 								on:click={() => changeOctave(index, 1)}
 								class="btn btn-square"
 							>
-								<svg
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon />
 							</button>
 							<button
 								type="button"
 								on:click={() => changeOctave(index, -1)}
 								class="btn btn-square"
 							>
-								<svg
-									class="rotate-180"
-									width="15"
-									height="15"
-									viewBox="0 0 15 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M4 9H11L7.5 4.5L4 9Z" fill="currentColor"> </path>
-								</svg>
+								<ArrowIcon dir="down" />
 							</button>
 						</div>
 					</div>
