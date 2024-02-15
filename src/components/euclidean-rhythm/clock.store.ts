@@ -3,9 +3,13 @@ import * as Tone from "tone";
 import { instruments, rhythms } from "./rhythms-instruments.store";
 
 export const clock = writable<Tone.Clock | null>(null);
-export const bpm = writable<number>(5);
+export const bpm = writable<number>(240);
 export const beatIndex = writable<number>(0);
 export const playing = writable<boolean>(false);
+
+bpm.subscribe(($bpm) => {
+	get(clock)?.set({ frequency: $bpm / 60 });
+});
 
 const getBeatsPlayedInBar = (pattern: number[], curIndex: number) => {
 	return pattern.reduce(
@@ -79,7 +83,7 @@ export const stop = () => {
 
 export const clockOnMount = () => {
 	const $bpm = get(bpm);
-	clock.set(new Tone.Clock(onClock, $bpm));
+	clock.set(new Tone.Clock(onClock, $bpm / 60));
 	return () => {
 		const $clock = get(clock);
 		$clock?.dispose?.();
