@@ -49,3 +49,5 @@ export const chordsObj = {
 } as const;
 
 export const chords = Object.keys(chordsObj) as (keyof typeof chordsObj)[];
+
+export const NOTES_PER_BEAT = 8;

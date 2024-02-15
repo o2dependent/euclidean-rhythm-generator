@@ -1,14 +1,15 @@
 import { get, writable } from "svelte/store";
 import * as Tone from "tone";
 import { instruments, rhythms } from "./rhythms-instruments.store";
+import { NOTES_PER_BEAT } from "./consts";
 
 export const clock = writable<Tone.Clock | null>(null);
-export const bpm = writable<number>(240);
+export const bpm = writable<number>(160);
 export const beatIndex = writable<number>(0);
 export const playing = writable<boolean>(false);
 
 bpm.subscribe(($bpm) => {
-	get(clock)?.set({ frequency: $bpm / 60 });
+	get(clock)?.set({ frequency: ($bpm / 60) * NOTES_PER_BEAT });
 });
 
 const getBeatsPlayedInBar = (pattern: number[], curIndex: number) => {
@@ -19,37 +20,35 @@ const getBeatsPlayedInBar = (pattern: number[], curIndex: number) => {
 };
 
 export const onClock = (time: number) => {
-	console.log(time);
+	if (!get(playing)) return;
 	const $beatIndex = get(beatIndex);
-	const newBeatIndex = $beatIndex + 1;
 	const $rhythms = get(rhythms);
 	const $instruments = get(instruments);
 	$rhythms.forEach((rhythm, i) => {
-		const { steps, pulses, notes, octave, pattern, arp } = rhythm;
+		if (!rhythm || !$instruments?.[i]) return;
+		const { steps, pulses, notes, octave, pattern, arp, notesPerBeat } = rhythm;
 
-		const keys = notes.map((note) =>
-			note
-				.replace("{{0}}", octave.toString())
-				.replace("{{1}}", (octave + 1).toString()),
-		);
-		const instrument = $instruments?.[i] ?? null;
-		const curIndex = $beatIndex % steps;
+		if ($beatIndex % (NOTES_PER_BEAT / notesPerBeat) !== 0) return;
+
+		const adjustedIndex = $beatIndex / (NOTES_PER_BEAT / notesPerBeat);
+
+		const curIndex = adjustedIndex % steps;
 		if (pattern?.[curIndex]) {
+			const keys = notes.map((note) =>
+				note
+					.replace("{{0}}", octave.toString())
+					.replace("{{1}}", (octave + 1).toString()),
+			);
+			const instrument = $instruments?.[i] ?? null;
 			if (arp.enabled) {
-				const barsPlayed = Math.floor($beatIndex / steps);
+				const barsPlayed = Math.floor(adjustedIndex / steps);
 				// get how many played beats have been played
 				const notesPlayedInBar = getBeatsPlayedInBar(pattern, curIndex);
 				const beatsPlayed = barsPlayed * pulses + notesPlayedInBar;
 				// get the current note index
 				let curNoteIndex = beatsPlayed % notes.length;
 				if (arp.dir === "desc") curNoteIndex = notes.length - curNoteIndex - 1;
-				console.log({
-					barsPlayed,
-					beatsPlayed,
-					curNoteIndex,
-					notesPlayedInBar,
-					pattern,
-				});
+
 				const curNote =
 					notes?.[curNoteIndex]
 						?.replace("{{0}}", octave.toString())
@@ -61,6 +60,7 @@ export const onClock = (time: number) => {
 			} else instrument?.synth?.triggerAttackRelease?.(keys, "8n", time);
 		}
 	});
+	const newBeatIndex = $beatIndex + 1;
 	beatIndex.set(newBeatIndex);
 };
 
@@ -83,7 +83,7 @@ export const stop = () => {
 
 export const clockOnMount = () => {
 	const $bpm = get(bpm);
-	clock.set(new Tone.Clock(onClock, $bpm / 60));
+	clock.set(new Tone.Clock(onClock, ($bpm / 60) * NOTES_PER_BEAT));
 	return () => {
 		const $clock = get(clock);
 		$clock?.dispose?.();
