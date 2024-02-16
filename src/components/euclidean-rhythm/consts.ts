@@ -51,3 +51,11 @@ export const chordsObj = {
 export const chords = Object.keys(chordsObj) as (keyof typeof chordsObj)[];
 
 export const NOTES_PER_BEAT = 8;
+
+export const EQ_DEFAULT = {
+	low: -120,
+	mid: -0,
+	high: -120,
+	highFrequency: 1200,
+	lowFrequency: 420,
+};

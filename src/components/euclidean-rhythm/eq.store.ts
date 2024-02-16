@@ -1,16 +1,20 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import * as Tone from "tone";
+import { EQ_DEFAULT } from "./consts";
 
 export const eq = writable<Tone.EQ3 | null>(null);
 
+export const eqValues = writable<typeof EQ_DEFAULT>(EQ_DEFAULT);
+
+eqValues.subscribe(($eqValues) => {
+	const $eq = get(eq);
+	if (!$eq) return;
+	$eq.set($eqValues);
+});
+
 export const eqOnMount = () => {
-	const newEq = new Tone.EQ3({
-		low: -120,
-		mid: -0,
-		high: -120,
-		highFrequency: 1200,
-		lowFrequency: 420,
-	}).toDestination();
+	const $eqValues = get(eqValues);
+	const newEq = new Tone.EQ3($eqValues).toDestination();
 	eq.set(newEq);
 
 	return () => {

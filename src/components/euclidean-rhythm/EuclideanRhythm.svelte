@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ArrowIcon from "../icon/ArrowIcon.svelte";
+	import EQInputs from "./EQInputs.svelte";
 	import RhythmItem from "./RhythmItem.svelte";
 	import Styles from "./Styles.svelte";
 	import { clockOnMount, playing, play, stop, bpm } from "./clock.store.ts";
@@ -24,6 +25,7 @@
 	});
 </script>
 
+<EQInputs />
 <div class="flex flex-col gap-1 h-full py-8 px-4">
 	<div class="flex flex-col gap-1 mx-auto container p-4">
 		<div class="flex justify-between items-center px-4 py-2">
