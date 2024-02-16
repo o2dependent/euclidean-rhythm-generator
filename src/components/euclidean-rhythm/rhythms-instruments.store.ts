@@ -3,6 +3,7 @@ import type { Instrument, Instruments, Rhythm } from "./types";
 import * as Tone from "tone";
 import { INSTRUMENT_TYPES, VOLUME_MIN, chordsObj } from "./consts";
 import { getPattern } from "euclidean-rhythms";
+import { eq } from "./eq.store";
 
 type InstrumentsStore = Instrument[];
 export const instruments = writable<InstrumentsStore>([
@@ -90,6 +91,7 @@ export const getInstrumentSynth = (
 	let synth = null;
 	// get what is inside of "()" ex. "starlight(C).wav" -> "C"
 	const urlNote = `${type.match(/\(([^)]+)\)/)?.[1] ?? "C"}4`.replace("s", "#");
+	const $eq = get(eq);
 	synth = new Tone.Sampler({
 		urls: {
 			[urlNote]: `${type}`,
@@ -97,6 +99,7 @@ export const getInstrumentSynth = (
 		volume,
 		baseUrl: "https://o2dependent.github.io/audio/",
 	}).toDestination();
+	if ($eq) synth.connect($eq);
 	// if (type === "pluck") {
 	// 	// synth = new Tone.PluckSynth().toDestination();
 	// } else if (type === "membrane") {
@@ -246,6 +249,7 @@ export const changeVolume = (index: number, value: number) => {
 
 export const instrumentsOnMount = () => {
 	const $rhythms = get(rhythms);
+
 	instruments.update(($instruments) =>
 		$instruments.map((instrument, i) => {
 			if (instrument.synth) {

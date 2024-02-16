@@ -3,6 +3,7 @@
 	import RhythmItem from "./RhythmItem.svelte";
 	import Styles from "./Styles.svelte";
 	import { clockOnMount, playing, play, stop, bpm } from "./clock.store.ts";
+	import { eqOnMount } from "./eq.store.ts";
 	import {
 		addRhythm,
 		instrumentsOnMount,
@@ -11,12 +12,14 @@
 	import { onMount } from "svelte";
 
 	onMount(() => {
+		const destroyEq = eqOnMount();
 		const destroyInstruments = instrumentsOnMount();
 		const destroyClock = clockOnMount();
 
 		return () => {
 			destroyInstruments();
 			destroyClock();
+			destroyEq();
 		};
 	});
 </script>
