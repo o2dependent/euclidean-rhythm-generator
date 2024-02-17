@@ -21,8 +21,8 @@
 			<div class="relative w-full h-full">
 				<input
 					type="range"
-					min={-200}
-					max={200}
+					min={-80}
+					max={20}
 					class="range range-xs -rotate-90 w-96 origin-left absolute -bottom-2.5 left-1/2"
 					value={low}
 					on:change={onSetEq("low")}
@@ -32,8 +32,8 @@
 			<div class="relative w-full h-full">
 				<input
 					type="range"
-					min={-200}
-					max={200}
+					min={-80}
+					max={20}
 					class="range range-xs -rotate-90 w-96 origin-left absolute -bottom-2.5 left-1/2"
 					value={mid}
 					on:change={onSetEq("mid")}
@@ -43,8 +43,8 @@
 			<div class="relative w-full h-full">
 				<input
 					type="range"
-					min={-200}
-					max={200}
+					min={-80}
+					max={20}
 					class="range range-xs -rotate-90 w-96 origin-left absolute -bottom-2.5 left-1/2"
 					value={high}
 					on:change={onSetEq("high")}
@@ -62,6 +62,7 @@
 		<p>Frequency</p>
 		<div class="w-full h-96 grid grid-cols-2 items-end">
 			<div class="relative w-full h-full">
+				<p>{lowFrequency}</p>
 				<input
 					type="range"
 					min={0}
@@ -73,6 +74,7 @@
 				/>
 			</div>
 			<div class="relative w-full h-full">
+				<p>{highFrequency}</p>
 				<input
 					type="range"
 					min={0}

@@ -26,8 +26,8 @@ export const INSTRUMENT_TYPES = [
 	"Cymatics - Trap/rimshot/Sword.wav",
 	"Cymatics - Trap/clap/Future(Gs).wav",
 ] as const;
-export const VOLUME_MAX = 12;
-export const VOLUME_MIN = -24;
+export const VOLUME_MAX = 0;
+export const VOLUME_MIN = -40;
 
 export const chordsObj = {
 	Cmaj: ["C{{0}}", "E{{0}}", "G{{0}}"],
@@ -53,9 +53,9 @@ export const chords = Object.keys(chordsObj) as (keyof typeof chordsObj)[];
 export const NOTES_PER_BEAT = 8;
 
 export const EQ_DEFAULT = {
-	low: -120,
-	mid: -0,
-	high: -120,
+	low: 0,
+	mid: 0,
+	high: -20,
 	highFrequency: 1200,
 	lowFrequency: 420,
 };

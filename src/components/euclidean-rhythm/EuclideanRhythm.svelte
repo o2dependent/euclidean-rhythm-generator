@@ -1,4 +1,5 @@
 <script lang="ts">
+	import EQVisualizer from "./EQVisualizer.svelte";
 	import ArrowIcon from "../icon/ArrowIcon.svelte";
 	import EQInputs from "./EQInputs.svelte";
 	import RhythmItem from "./RhythmItem.svelte";
@@ -25,6 +26,7 @@
 	});
 </script>
 
+<EQVisualizer />
 <EQInputs />
 <div class="flex flex-col gap-1 h-full py-8 px-4">
 	<div class="flex flex-col gap-1 mx-auto container p-4">
