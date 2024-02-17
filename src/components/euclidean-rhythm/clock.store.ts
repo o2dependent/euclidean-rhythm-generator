@@ -8,8 +8,10 @@ export const bpm = writable<number>(160);
 export const beatIndex = writable<number>(0);
 export const playing = writable<boolean>(false);
 
+export const getBPMFrequency = ($bpm: number) => ($bpm / 60) * NOTES_PER_BEAT;
+
 bpm.subscribe(($bpm) => {
-	get(clock)?.set({ frequency: ($bpm / 60) * NOTES_PER_BEAT });
+	get(clock)?.set({ frequency: getBPMFrequency($bpm) });
 });
 
 const getBeatsPlayedInBar = (pattern: number[], curIndex: number) => {
@@ -83,7 +85,7 @@ export const stop = () => {
 
 export const clockOnMount = () => {
 	const $bpm = get(bpm);
-	clock.set(new Tone.Clock(onClock, ($bpm / 60) * NOTES_PER_BEAT));
+	clock.set(new Tone.Clock(onClock, getBPMFrequency($bpm)));
 	return () => {
 		const $clock = get(clock);
 		$clock?.dispose?.();
