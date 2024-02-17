@@ -13,12 +13,13 @@
 	const clearCanvas = () => {
 		if (!ctx || !canvas) return;
 		ctx?.clearRect(0, 0, canvas?.width, canvas?.height);
+		ctx.fillStyle = "black";
+		ctx?.fillRect(0, 0, canvas?.width, canvas?.height);
 	};
 
-	const ANALYSER_SIZE = 32;
+	const ANALYSER_SIZE = 2 ** 6;
 	let barHeights: number[] = new Array(ANALYSER_SIZE).fill(0);
-	const BAR_DECAY_PER_TICK = 0.0001;
-
+	let STARTING_X_TEST_VALUE = 0;
 	const draw = () => {
 		if (!ctx) return;
 		const dataArray = analyser?.getValue();
@@ -26,13 +27,19 @@
 		if (!dataArray) return;
 
 		clearCanvas();
-		const barWidth = canvas?.width / (dataArray?.length - 1);
+		// const barWidth = canvas?.width / dataArray?.length;
+		const barWidth = Math.floor(canvas?.width / dataArray?.length);
+		console.log({
+			barWidth,
+			canvasWidth: canvas?.width,
+			dataArrayLength: dataArray?.length,
+		});
 		let barHeight;
-		let x = 0;
+		let x = STARTING_X_TEST_VALUE + canvas?.width / dataArray?.length / 2;
 
 		for (let i = 0; i < (dataArray?.length ?? 0); i++) {
 			if (Array.isArray(dataArray)) continue;
-			const data = Math.max(0, dataArray[i] + 180);
+			const data = Math.max(0, dataArray[i] + 280);
 			barHeights[i] = data;
 			// if (data < barHeights[i]) {
 			// 	barHeights[i] = data;
@@ -46,15 +53,11 @@
 			})`;
 			// ctx?.fillRect?.(x, canvas?.height - barHeight / 2, barWidth, barHeight);
 			ctx?.fillRect?.(x, canvas?.height - barHeight / 2, barWidth, barHeight);
-			x += barWidth + 1;
+			x += barWidth;
+			// x += barWidth + 1;
 		}
 		requestAnimationFrame(draw);
 	};
-	playing.subscribe((p) => {
-		if (p) {
-			draw();
-		}
-	});
 
 	eq.subscribe((e) => {
 		if (analyser) {
@@ -66,13 +69,23 @@
 		analyser.toDestination();
 		$eq?.connect(analyser);
 		clearCanvas();
-
+		const ani = requestAnimationFrame(draw);
+		const limiter = new Tone.Limiter(-20).toDestination();
+		analyser.connect(limiter);
 		return () => {
 			analyser?.dispose();
+			cancelAnimationFrame(ani);
 		};
 	});
 </script>
 
+<input
+	type="range"
+	min="-{ANALYSER_SIZE * 2}"
+	max={ANALYSER_SIZE * 2}
+	class="range"
+	bind:value={STARTING_X_TEST_VALUE}
+/>
 <canvas bind:this={canvas} width="720" height="320"></canvas>
 <button
 	class="btn btn-error"
