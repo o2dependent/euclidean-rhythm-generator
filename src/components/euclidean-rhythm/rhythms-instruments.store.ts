@@ -23,7 +23,7 @@ export const rhythms = writable<RhythmsStore>([
 		volume: -6,
 		offset: 0,
 		pattern: getPattern(5, 8),
-		notesPerBeat: 4,
+		stepsPerBeat: 4,
 		arp: {
 			enabled: true,
 			dir: "asc",
@@ -37,7 +37,7 @@ export const rhythms = writable<RhythmsStore>([
 		volume: -14,
 		offset: 0,
 		pattern: getPattern(3, 8),
-		notesPerBeat: 2,
+		stepsPerBeat: 2,
 		arp: {
 			enabled: true,
 			dir: "asc",
@@ -51,7 +51,7 @@ export const rhythms = writable<RhythmsStore>([
 		volume: -14,
 		offset: 0,
 		pattern: getPattern(1, 16),
-		notesPerBeat: 1,
+		stepsPerBeat: 1,
 		arp: {
 			enabled: false,
 			dir: "asc",
@@ -65,7 +65,7 @@ export const rhythms = writable<RhythmsStore>([
 		volume: -5,
 		offset: 0,
 		pattern: getPattern(3, 8),
-		notesPerBeat: 1,
+		stepsPerBeat: 1,
 		arp: {
 			enabled: true,
 			dir: "asc",
@@ -150,7 +150,7 @@ export const addRhythm = () => {
 			volume: -8,
 			offset: 0,
 			pattern: getPattern(3, 8),
-			notesPerBeat: 1,
+			stepsPerBeat: 1,
 			arp: {
 				enabled: false,
 				dir: "asc",

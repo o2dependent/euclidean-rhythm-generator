@@ -19,7 +19,7 @@ export interface Rhythm {
 	volume: number;
 	offset: number;
 	pattern: number[];
-	notesPerBeat: 1 | 2 | 4 | 8;
+	stepsPerBeat: 1 | 2 | 4 | 8;
 	arp: {
 		enabled: boolean;
 		dir: "asc" | "desc";

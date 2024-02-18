@@ -28,11 +28,11 @@ export const onClock = (time: number) => {
 	const $instruments = get(instruments);
 	$rhythms.forEach((rhythm, i) => {
 		if (!rhythm || !$instruments?.[i]) return;
-		const { steps, pulses, notes, octave, pattern, arp, notesPerBeat } = rhythm;
+		const { steps, pulses, notes, octave, pattern, arp, stepsPerBeat } = rhythm;
 
-		if ($beatIndex % (NOTES_PER_BEAT / notesPerBeat) !== 0) return;
+		if ($beatIndex % (NOTES_PER_BEAT / stepsPerBeat) !== 0) return;
 
-		const adjustedIndex = $beatIndex / (NOTES_PER_BEAT / notesPerBeat);
+		const adjustedIndex = $beatIndex / (NOTES_PER_BEAT / stepsPerBeat);
 
 		const curIndex = adjustedIndex % steps;
 		if (pattern?.[curIndex]) {
