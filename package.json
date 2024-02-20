@@ -1,27 +1,27 @@
 {
-  "name": "tonejs-test",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/svelte": "^5.0.3",
-    "@astrojs/tailwind": "^5.1.0",
-    "@astrojs/vue": "^4.0.8",
-    "astro": "^4.2.2",
-    "euclidean-rhythms": "^3.1.1",
-    "svelte": "^4.2.9",
-    "svelte-knob": "^1.0.2",
-    "tailwindcss": "^3.4.1",
-    "tone": "^14.7.77",
-    "vue": "^3.4.15"
-  },
-  "devDependencies": {
-    "daisyui": "latest"
-  }
+	"name": "euclidean-rhythm-generator",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/svelte": "^5.0.3",
+		"@astrojs/tailwind": "^5.1.0",
+		"@astrojs/vue": "^4.0.8",
+		"astro": "^4.2.2",
+		"euclidean-rhythms": "^3.1.1",
+		"svelte": "^4.2.9",
+		"svelte-knob": "^1.0.2",
+		"tailwindcss": "^3.4.1",
+		"tone": "^14.7.77",
+		"vue": "^3.4.15"
+	},
+	"devDependencies": {
+		"daisyui": "latest"
+	}
 }
