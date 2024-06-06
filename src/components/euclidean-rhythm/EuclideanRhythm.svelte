@@ -14,20 +14,18 @@
 	import { onMount } from "svelte";
 
 	onMount(() => {
-		const destroyEq = eqOnMount();
 		const destroyInstruments = instrumentsOnMount();
 		const destroyClock = clockOnMount();
 
 		return () => {
 			destroyInstruments();
 			destroyClock();
-			destroyEq();
 		};
 	});
 </script>
 
-<EQVisualizer />
-<EQInputs />
+<!-- <EQVisualizer /> -->
+<!-- <EQInputs /> -->
 <div class="flex flex-col gap-1 h-full py-8 px-4">
 	<div class="flex flex-col gap-1 mx-auto container p-4">
 		<div class="flex justify-between items-center px-4 py-2">

@@ -66,8 +66,9 @@ export const onClock = (time: number) => {
 	beatIndex.set(newBeatIndex);
 };
 
-export const play = () => {
+export const play = async () => {
 	const $clock = get(clock);
+	await Tone.start();
 	if (["stopped", "paused"].includes($clock?.state as string)) {
 		$clock?.start();
 		playing.set(true);
